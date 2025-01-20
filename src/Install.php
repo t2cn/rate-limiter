@@ -58,7 +58,7 @@ class Install
             // 将源目录的文件和目录复制到目标目录
             copy_dir(__DIR__ . "/$source", base_path() . "/$dest");
             // 输出日志，提示创建了目标路径
-            echo "Create $dest";
+            echo "Create $dest ";
         }
     }
 
