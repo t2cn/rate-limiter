@@ -98,15 +98,14 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        dumpx($filePath);
-        dumpx($newItem);
-//
-//        // 读取文件内容
-//        $content = file_get_contents($filePath);
-//
-//        // 正则提取数组内容
-//        preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
-//
+
+        // 读取文件内容
+        $content = file_get_contents($filePath);
+
+        // 正则提取数组内容
+        preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
+        dumpx($matches);
+
 //        if (isset($matches[1])) {
 //            // 获取数组内容
 //            $arrayContent = $matches[1];
