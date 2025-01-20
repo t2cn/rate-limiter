@@ -98,13 +98,13 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        static::findHelper();
+
         // 读取文件内容
         $content = file_get_contents($filePath);
 
         // 正则提取数组内容
         preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
-        dumpx($matches);
+        var_dump($matches);
 
 //        if (isset($matches[1])) {
 //            // 获取数组内容
@@ -130,15 +130,5 @@ class Install
 //
 //            echo "Added $newItem to $filePath\n";
 //        }
-    }
-
-    /**
-     * FindHelper.
-     * @return void
-     */
-    protected static function findHelper(): void
-    {
-        // Install.php in T2 engine
-        require_once __DIR__ . '/../vendor/t2cn/framework/src/App/helpers.php';
     }
 }
