@@ -103,22 +103,23 @@ class Install
         if (isset($matches[1])) {
             // 获取数组内容
             $arrayContent = $matches[1];
+            $lines        = explode("\n", $arrayContent);
+            $lastLine     = trim(end($lines));
 
-            // 判断最后一项是否有逗号
-            $lines    = explode("\n", $arrayContent);
-            $lastLine = trim(end($lines));
-
-            // 判断数组最后一条数据是否有逗号
-            if (substr($lastLine, -1) === ',') {
-                // 如果有逗号，直接添加新项
-                $arrayContent .= "\n    $newItem,";
+            // 处理情况1和情况2
+            if ($lastLine === '') {
+                // 情况2：数组为空且 [] 在同一行
+                $arrayContent = "\n    $newItem";
+            } elseif (str_ends_with($lastLine, ',')) {
+                // 情况1：最后一条数据有逗号
+                $arrayContent .= "\n    $newItem";
             } else {
-                // 如果没有逗号，先加逗号再添加新项
+                // 情况3：没有逗号，添加逗号再添加内容
                 $arrayContent .= ",\n    $newItem";
             }
 
             // 构造完整的文件内容并写回文件
-            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent];", $content);
+            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent\n];", $content);
             file_put_contents($filePath, $newContent);
 
             echo "Added $newItem to $filePath\n";
