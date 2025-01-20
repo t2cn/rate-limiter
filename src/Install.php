@@ -144,8 +144,6 @@ class Install
             if (file_put_contents($filePath, $updatedContent) === false) {
                 die("无法写入文件 $filePath");
             }
-
-            echo "内容已成功追加。\n";
         }
     }
 }
