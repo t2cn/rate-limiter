@@ -59,6 +59,27 @@ class Install
             copy_dir(__DIR__ . "/$source", base_path() . "/$dest");
             // 输出日志，提示创建了目标路径
             echo "Create $dest ";
+
+            // 手动指定目标文件路径为 bootstrap.php
+            $targetFilePath = base_path() . "/$dest/bootstrap.php";
+
+            // 判断目标文件是否存在
+            if (is_file($targetFilePath)) {
+                // 读取文件内容
+                $fileContents = file_get_contents($targetFilePath);
+
+                // 检查文件内容中是否已经包含 'T2\RateLimiter\Bootstrap::class'
+                if (!str_contains($fileContents, 'T2\RateLimiter\Bootstrap::class')) {
+                    // 如果没有包含，则追加内容
+                    $fileContents = rtrim($fileContents, "\n") . ",\n    T2\\RateLimiter\\Bootstrap::class\n];";
+
+                    // 写回修改后的文件内容
+                    file_put_contents($targetFilePath, $fileContents);
+                    echo "Added T2\\RateLimiter\\Bootstrap::class to $targetFilePath\n";
+                } else {
+                    echo "T2\\RateLimiter\\Bootstrap::class already exists in $targetFilePath\n";
+                }
+            }
         }
     }
 
