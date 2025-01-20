@@ -98,35 +98,38 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        // 读取文件内容
-        $content = file_get_contents($filePath);
-
-        // 正则提取数组内容
-        preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
-
-        if (isset($matches[1])) {
-            // 获取数组内容
-            $arrayContent = $matches[1];
-            $lines        = explode("\n", $arrayContent);
-            $lastLine     = trim(end($lines));
-
-            // 判断数组最后一条记录的情况
-            if (empty($lastLine)) {
-                // 情况1：数组为空且 [] 在同一行
-                $arrayContent = "\n    $newItem";
-            } elseif (substr($lastLine, -1) === ',') {
-                // 情况2：最后一条数据有逗号
-                $arrayContent .= "\n    $newItem";
-            } else {
-                // 情况3：没有逗号，添加逗号再添加内容
-                $arrayContent .= ",\n    $newItem";
-            }
-
-            // 构造完整的文件内容并写回文件
-            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent\n];", $content);
-            file_put_contents($filePath, $newContent);
-
-            echo "Added $newItem to $filePath\n";
-        }
+        dumpx($filePath);
+        dumpx($newItem);
+//
+//        // 读取文件内容
+//        $content = file_get_contents($filePath);
+//
+//        // 正则提取数组内容
+//        preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
+//
+//        if (isset($matches[1])) {
+//            // 获取数组内容
+//            $arrayContent = $matches[1];
+//            $lines        = explode("\n", $arrayContent);
+//            $lastLine     = trim(end($lines));
+//
+//            // 判断数组最后一条记录的情况
+//            if (empty($lastLine)) {
+//                // 情况1：数组为空且 [] 在同一行
+//                $arrayContent = "\n    $newItem";
+//            } elseif (substr($lastLine, -1) === ',') {
+//                // 情况2：最后一条数据有逗号
+//                $arrayContent .= "\n    $newItem";
+//            } else {
+//                // 情况3：没有逗号，添加逗号再添加内容
+//                $arrayContent .= ",\n    $newItem";
+//            }
+//
+//            // 构造完整的文件内容并写回文件
+//            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent\n];", $content);
+//            file_put_contents($filePath, $newContent);
+//
+//            echo "Added $newItem to $filePath\n";
+//        }
     }
 }
