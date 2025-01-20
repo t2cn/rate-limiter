@@ -106,8 +106,8 @@ class Install
             $lines        = explode("\n", $arrayContent);
             $lastLine     = trim(end($lines));
 
-            // 处理情况1和情况2
-            if ($lastLine === '') {
+            // 判断数组最后一条记录的情况
+            if (empty($lastLine)) {
                 // 情况2：数组为空且 [] 在同一行
                 $arrayContent = "\n    $newItem";
             } elseif (str_ends_with($lastLine, ',')) {
