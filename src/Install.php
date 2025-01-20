@@ -71,9 +71,7 @@ class Install
                 // 检查文件内容中是否已经包含 'T2\RateLimiter\Bootstrap::class'
                 if (!str_contains($fileContents, 'T2\RateLimiter\Bootstrap::class')) {
                     // 如果没有包含，则追加内容
-                    // 找到最后一个 ']' 的位置，并插入新元素
-                    $lastBracketPos = strrpos($fileContents, ']');
-                    $fileContents   = substr_replace($fileContents, ",\n    T2\\RateLimiter\\Bootstrap::class\n]", $lastBracketPos);
+                    $fileContents = self::insertIntoArray($fileContents, "T2\\RateLimiter\\Bootstrap::class");
 
                     // 写回修改后的文件内容
                     file_put_contents($targetFilePath, $fileContents);
@@ -103,5 +101,17 @@ class Install
                 echo "Deleted: $file\n";
             }
         }
+    }
+
+    /**
+     * @param string $content
+     * @param string $newItem
+     * @return string
+     */
+    protected static function insertIntoArray(string $content, string $newItem): string
+    {
+        // 使用正则表达式匹配数组的最后一个元素和分号
+        $pattern = '/(\[[^\]]*)(\])(\s*;)/';
+        return preg_replace($pattern, '$1, ' . $newItem . '$2$3', $content);
     }
 }
