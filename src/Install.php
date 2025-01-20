@@ -110,8 +110,33 @@ class Install
      */
     protected static function insertIntoArray(string $content, string $newItem): string
     {
-        // 使用正则表达式匹配数组的最后一个元素和分号
+        // 去除文件中的多余空白字符和换行符
+        $content = trim($content);
+
+        // 检查数组是否为空
+        if ($content === 'return [];') {
+            // 如果是空数组，直接返回新的数组内容
+            return "return [$newItem];";
+        }
+
+        // 使用正则表达式匹配数组的最后一个元素
         $pattern = '/(\[[^\]]*)(\])(\s*;)/';
-        return preg_replace($pattern, '$1, ' . $newItem . '$2$3', $content);
+        $content = preg_replace($pattern, '$1$2$3', $content);
+
+        // 查找数组的最后一个元素并处理末尾逗号
+        $lines    = explode("\n", $content);
+        $lastLine = trim(end($lines));
+
+        // 如果最后一行是数组的结束括号，则直接添加新项
+        if (rtrim($lastLine, ",") === "]") {
+            return rtrim($content, "]") . ", $newItem" . "\n]";
+        } elseif (substr($lastLine, -1) === "，") {  // 中文逗号
+            // 检查是否是中文逗号，如果是中文逗号则替换成英文逗号
+            $content = rtrim($content, "，");
+            return rtrim($content, "]") . ", $newItem" . "\n]";
+        } else {
+            // 否则，添加逗号和新项
+            return rtrim($content, "]") . ", $newItem" . "\n]";
+        }
     }
 }
