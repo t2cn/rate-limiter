@@ -81,23 +81,13 @@ class Install
     {
         // 遍历路径关系数组，处理每一对目标路径
         foreach (static::$pathRelation as $dest) {
-            // 构建目标路径的绝对路径
-            $path = base_path() . "/$dest";
-            // 如果目标路径不存在，则跳过
-            if (!is_dir($path) && !is_file($path)) {
-                continue;
-            }
+            $file = base_path() . "/$dest/limiter.php"; // 目标文件路径
 
-            // 输出日志，提示删除了目标路径
-            echo "Remove $dest";
-            // 如果目标路径是文件或符号链接，则删除该文件
-            if (is_file($path) || is_link($path)) {
-                unlink($path);
-                continue;
+            // 如果目标文件存在，删除该文件
+            if (is_file($file)) {
+                unlink($file);
+                echo "Deleted: $file\n";
             }
-
-            // 如果目标路径是目录，则递归删除目录及其内容
-            remove_dir($path);
         }
     }
 }
