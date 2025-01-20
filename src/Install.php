@@ -58,7 +58,7 @@ class Install
             // 将源目录的文件和目录复制到目标目录
             copy_dir(__DIR__ . "/$source", base_path() . "/$dest");
             // 输出日志，提示创建了目标路径
-            echo "Create $dest ";
+            echo "Create $dest \n";
 
             // 方法卸载这里。
             // 手动指定目标文件路径为 bootstrap.php
@@ -113,7 +113,7 @@ class Install
 
             // 检查是否已经包含要追加的内容
             if (str_contains($str, $newItem)) {
-                echo "内容已存在，无需追加。\n";
+                echo "The content already exists, no need to append.\n"; // 内容已存在，无需追加。
                 return;
             }
 
@@ -137,12 +137,12 @@ class Install
 
             // 检查替换是否成功
             if ($updatedContent === null) {
-                die("正则匹配或替换失败");
+                die("Regular match or replacement failed"); // 正则匹配或替换失败
             }
 
             // 将修改后的内容写回文件
             if (file_put_contents($filePath, $updatedContent) === false) {
-                die("无法写入文件 $filePath");
+                die("Unable to write to file $filePath"); // 无法写入文件
             }
         }
     }
