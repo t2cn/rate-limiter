@@ -4,7 +4,9 @@
   "license": "MIT",
   "description": "T2-Engine plugin t2cn/rate-limiter",
   "require": {
-    "php": ">=8.3"
+    "php": ">=8.3",
+    "ext-apcu": "*",
+    "ext-redis": "*"
   },
   "require-dev": {
     "t2cn/engine": "^1.0.0"
