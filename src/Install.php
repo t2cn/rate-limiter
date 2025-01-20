@@ -108,7 +108,9 @@ class Install
         if (isset($matches[1])) {
             // 获取数组内容
             $arrayContent = $matches[1];
-            var_dump($arrayContent);
+            // 去除字符串中的所有空格
+            $str = str_replace(' ', '', $arrayContent);
+            var_dump($str);
 //            $lines        = explode("\n", $arrayContent);
 //            // 使用 array_filter() 过滤掉空元素
 //            $filteredArray   = array_filter($lines);
