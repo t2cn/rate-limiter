@@ -60,26 +60,9 @@ class Install
             // 输出日志，提示创建了目标路径
             echo "Create $dest ";
 
-            // 手动指定目标文件路径为 bootstrap.php
+            // 获取目标文件路径
             $targetFilePath = base_path() . "/$dest/bootstrap.php";
-
-            // 判断目标文件是否存在
-            if (is_file($targetFilePath)) {
-                // 读取文件内容
-                $fileContents = file_get_contents($targetFilePath);
-
-                // 检查文件内容中是否已经包含 'T2\RateLimiter\Bootstrap::class'
-                if (!str_contains($fileContents, 'T2\RateLimiter\Bootstrap::class')) {
-                    // 如果没有包含，则追加内容
-                    $fileContents = self::insertIntoArray($fileContents, "T2\\RateLimiter\\Bootstrap::class");
-
-                    // 写回修改后的文件内容
-                    file_put_contents($targetFilePath, $fileContents);
-                    echo "Added T2\\RateLimiter\\Bootstrap::class to $targetFilePath\n";
-                } else {
-                    echo "T2\\RateLimiter\\Bootstrap::class already exists in $targetFilePath\n";
-                }
-            }
+            self::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
         }
     }
 
@@ -104,39 +87,41 @@ class Install
     }
 
     /**
-     * @param string $content
+     * 添加新的内容到数组的最后一行
+     * @param string $filePath
      * @param string $newItem
-     * @return string
+     * @return void
      */
-    protected static function insertIntoArray(string $content, string $newItem): string
+    protected static function addToArray(string $filePath, string $newItem): void
     {
-        // 去除文件中的多余空白字符和换行符
-        $content = trim($content);
+        // 读取文件内容
+        $content = file_get_contents($filePath);
 
-        // 检查数组是否为空
-        if ($content === 'return [];') {
-            // 如果是空数组，直接返回新的数组内容
-            return "return [$newItem];";
-        }
+        // 查找数组的最后一项
+        preg_match('/return\s*\[(.*)\];/s', $content, $matches);
 
-        // 使用正则表达式匹配数组的最后一个元素
-        $pattern = '/(\[[^\]]*)(\])(\s*;)/';
-        $content = preg_replace($pattern, '$1$2$3', $content);
+        if (isset($matches[1])) {
+            // 获取数组内容
+            $arrayContent = $matches[1];
 
-        // 查找数组的最后一个元素并处理末尾逗号
-        $lines    = explode("\n", $content);
-        $lastLine = trim(end($lines));
+            // 判断最后一项是否有逗号
+            $lines    = explode("\n", $arrayContent);
+            $lastLine = trim(end($lines));
 
-        // 如果最后一行是数组的结束括号，则直接添加新项
-        if (rtrim($lastLine, ",") === "]") {
-            return rtrim($content, "]") . ", $newItem" . "\n]";
-        } elseif (substr($lastLine, -1) === "，") {  // 中文逗号
-            // 检查是否是中文逗号，如果是中文逗号则替换成英文逗号
-            $content = rtrim($content, "，");
-            return rtrim($content, "]") . ", $newItem" . "\n]";
-        } else {
-            // 否则，添加逗号和新项
-            return rtrim($content, "]") . ", $newItem" . "\n]";
+            // 判断数组最后一条数据是否有逗号
+            if (substr($lastLine, -1) === ',') {
+                // 如果有逗号，直接添加新项
+                $arrayContent .= "\n    $newItem,";
+            } else {
+                // 如果没有逗号，先加逗号再添加新项
+                $arrayContent .= ",\n    $newItem";
+            }
+
+            // 构造完整的文件内容并写回文件
+            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent];", $content);
+            file_put_contents($filePath, $newContent);
+
+            echo "Added $newItem to $filePath\n";
         }
     }
 }
