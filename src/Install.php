@@ -55,15 +55,6 @@ class Install
     {
         // 遍历路径关系数组，处理每一对源路径和目标路径
         foreach (static::$pathRelation as $source => $dest) {
-            // 判断目标路径中的文件夹是否存在
-            if ($pos = strrpos($dest, '/')) {
-                // 提取目标路径的父目录
-                $parent_dir = base_path() . '/' . substr($dest, 0, $pos);
-                // 如果父目录不存在，则创建该目录
-                if (!is_dir($parent_dir)) {
-                    mkdir($parent_dir, 0777, true);
-                }
-            }
             // 将源目录的文件和目录复制到目标目录
             copy_dir(__DIR__ . "/$source", base_path() . "/$dest");
             // 输出日志，提示创建了目标路径
