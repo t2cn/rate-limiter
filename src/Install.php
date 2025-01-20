@@ -60,9 +60,12 @@ class Install
             // 输出日志，提示创建了目标路径
             echo "Create $dest ";
 
-            // 获取目标文件路径
+            // 方法卸载这里。
+            // 手动指定目标文件路径为 bootstrap.php
             $targetFilePath = base_path() . "/$dest/bootstrap.php";
-            self::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+
+            // 调用处理数组添加新项的方法
+            static::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
         }
     }
 
@@ -88,6 +91,7 @@ class Install
 
     /**
      * 添加新的内容到数组的最后一行
+     * 读取并修改文件中的数组，然后保存回来。
      * @param string $filePath
      * @param string $newItem
      * @return void
@@ -97,8 +101,8 @@ class Install
         // 读取文件内容
         $content = file_get_contents($filePath);
 
-        // 查找数组的最后一项
-        preg_match('/return\s*\[(.*)\];/s', $content, $matches);
+        // 正则提取数组内容
+        preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
 
         if (isset($matches[1])) {
             // 获取数组内容
@@ -108,10 +112,10 @@ class Install
 
             // 判断数组最后一条记录的情况
             if (empty($lastLine)) {
-                // 情况2：数组为空且 [] 在同一行
+                // 情况1：数组为空且 [] 在同一行
                 $arrayContent = "\n    $newItem";
-            } elseif (str_ends_with($lastLine, ',')) {
-                // 情况1：最后一条数据有逗号
+            } elseif (substr($lastLine, -1) === ',') {
+                // 情况2：最后一条数据有逗号
                 $arrayContent .= "\n    $newItem";
             } else {
                 // 情况3：没有逗号，添加逗号再添加内容
