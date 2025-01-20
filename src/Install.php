@@ -71,8 +71,9 @@ class Install
                 // 检查文件内容中是否已经包含 'T2\RateLimiter\Bootstrap::class'
                 if (!str_contains($fileContents, 'T2\RateLimiter\Bootstrap::class')) {
                     // 如果没有包含，则追加内容
-                    // 找到数组的闭合部分 "]" ，并将新的元素插入到闭合前
-                    $fileContents = rtrim($fileContents, "\n") . ",\n    T2\\RateLimiter\\Bootstrap::class\n];";
+                    // 找到最后一个 ']' 的位置，并插入新元素
+                    $lastBracketPos = strrpos($fileContents, ']');
+                    $fileContents   = substr_replace($fileContents, ",\n    T2\\RateLimiter\\Bootstrap::class\n]", $lastBracketPos);
 
                     // 写回修改后的文件内容
                     file_put_contents($targetFilePath, $fileContents);
