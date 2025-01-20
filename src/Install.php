@@ -84,29 +84,6 @@ class Install
     }
 
     /**
-     * @param string $content
-     * @param string $newItem
-     * @return string
-     */
-    protected static function insertIntoArray(string $content, string $newItem): string
-    {
-        // 处理空数组的情况
-        if (trim($content) === '[]') {
-            return "[$newItem]";
-        }
-
-        // 正则表达式匹配数组的最后一个元素和逗号（可选），更灵活地处理各种情况
-        $pattern = '/(\[[^\]]*)(\])(\s*(,)?\s*)/';
-
-        // 替换字符串：
-        // - $1: 匹配到的第一个捕获组，即数组的开始部分
-        // - $2: 匹配到的第二个捕获组，即最后一个右括号
-        // - $3: 匹配到的第三个捕获组，即逗号和后面的空白字符（如果有的话）
-        // - $newItem: 要插入的新元素
-        return preg_replace($pattern, '$1, ' . $newItem . '$3', $content);
-    }
-
-    /**
      * 根据路径关系进行卸载操作
      * 该方法根据 `pathRelation` 数组中的目标路径，执行删除操作。
      * 它会检查目标路径是否存在，如果存在则删除文件或目录。
@@ -124,5 +101,17 @@ class Install
                 echo "Deleted: $file\n";
             }
         }
+    }
+
+    /**
+     * @param string $content
+     * @param string $newItem
+     * @return string
+     */
+    protected static function insertIntoArray(string $content, string $newItem): string
+    {
+        // 使用正则表达式匹配数组的最后一个元素和分号
+        $pattern = '/(\[[^\]]*)(\])(\s*;)/';
+        return preg_replace($pattern, '$1, ' . $newItem . '$2$3', $content);
     }
 }
