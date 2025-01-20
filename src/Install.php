@@ -98,7 +98,7 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-
+        static::findHelper();
         // 读取文件内容
         $content = file_get_contents($filePath);
 
@@ -130,5 +130,15 @@ class Install
 //
 //            echo "Added $newItem to $filePath\n";
 //        }
+    }
+
+    /**
+     * FindHelper.
+     * @return void
+     */
+    protected static function findHelper(): void
+    {
+        // Install.php in T2 engine
+        require_once __DIR__ . '/vendor/framework/src/App/helpers.php';
     }
 }
