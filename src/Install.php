@@ -98,35 +98,43 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-
         // 读取文件内容
         $fileContent = file_get_contents($filePath);
 
         // 正则提取数组内容
-        preg_match('/return\s*\[(.*?);/s', $fileContent, $matches);
+        preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches);
 
         if (isset($matches[1])) {
             // 获取数组内容
             $arrayContent = $matches[1];
-            // 去除字符串中的所有空格
-            $str = str_replace(' ', '', $arrayContent);
+
             // 去除多余空格和换行符
-            $str = preg_replace('/\s+/', '', $str);
+            $str = preg_replace('/\s+/', '', $arrayContent);
+
+            // 检查是否已经包含要追加的内容
+            if (str_contains($str, $newItem)) {
+                echo "内容已存在，无需追加。\n";
+                return;
+            }
+
             // 判断字符串是否以逗号结尾
             if (!str_ends_with($str, ',')) {
                 $str .= ',';
             }
+
             // 追加内容
-            $newItem = "T2\\RateLimiter\\Bootstrap::class";
-            $str     .= $newItem;
+            $str .= $newItem;
+
             // 构建新的 return 内容
             $newReturnContent = "return [$str];";
+
             // 使用正则替换整个 return 语句
             $updatedContent = preg_replace(
-                '/return\s*\[.*?;/s', // 匹配 return 语句的正则
+                '/return\s*\[.*?\];/s', // 匹配 return 语句的正则
                 $newReturnContent,      // 替换为新的 return 内容
                 $fileContent
             );
+
             // 检查替换是否成功
             if ($updatedContent === null) {
                 die("正则匹配或替换失败");
@@ -136,6 +144,8 @@ class Install
             if (file_put_contents($filePath, $updatedContent) === false) {
                 die("无法写入文件 $filePath");
             }
+
+            echo "内容已成功追加。\n";
         }
     }
 }
