@@ -104,13 +104,13 @@ class Install
 
         // 正则提取数组内容
         preg_match('/return\s*\[(.*?)\];/s', $content, $matches);
-        var_dump($matches);
 
-//        if (isset($matches[1])) {
-//            // 获取数组内容
-//            $arrayContent = $matches[1];
-//            $lines        = explode("\n", $arrayContent);
-//            $lastLine     = trim(end($lines));
+        if (isset($matches[1])) {
+            // 获取数组内容
+            $arrayContent = $matches[1];
+            $lines        = explode("\n", $arrayContent);
+            var_dump($lines);
+//            $lastLine = trim(end($lines));
 //
 //            // 判断数组最后一条记录的情况
 //            if (empty($lastLine)) {
@@ -129,6 +129,6 @@ class Install
 //            file_put_contents($filePath, $newContent);
 //
 //            echo "Added $newItem to $filePath\n";
-//        }
+        }
     }
 }
