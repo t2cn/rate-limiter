@@ -103,14 +103,13 @@ class Install
         $fileContent = file_get_contents($filePath);
 
         // 正则提取数组内容
-        preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches);
+        preg_match('/return\s*\[(.*?);/s', $fileContent, $matches);
 
         if (isset($matches[1])) {
             // 获取数组内容
             $arrayContent = $matches[1];
             // 去除字符串中的所有空格
             $str = str_replace(' ', '', $arrayContent);
-            var_dump($str);
             // 去除多余空格和换行符
             $str = preg_replace('/\s+/', '', $str);
             // 判断字符串是否以逗号结尾
@@ -124,7 +123,7 @@ class Install
             $newReturnContent = "return [$str];";
             // 使用正则替换整个 return 语句
             $updatedContent = preg_replace(
-                '/return\s*\[.*?\];/s', // 匹配 return 语句的正则
+                '/return\s*\[.*?;/s', // 匹配 return 语句的正则
                 $newReturnContent,      // 替换为新的 return 内容
                 $fileContent
             );
@@ -137,31 +136,6 @@ class Install
             if (file_put_contents($filePath, $updatedContent) === false) {
                 die("无法写入文件 $filePath");
             }
-
-//            $lines        = explode("\n", $arrayContent);
-//            // 使用 array_filter() 过滤掉空元素
-//            $filteredArray   = array_filter($lines);
-//            $filteredArray[] = "T2\\RateLimiter\\Bootstrap::class";
-//            var_dump($filteredArray);
-//            $lastLine = trim(end($lines));
-//
-//            // 判断数组最后一条记录的情况
-//            if (empty($lastLine)) {
-//                // 情况1：数组为空且 [] 在同一行
-//                $arrayContent = "\n    $newItem";
-//            } elseif (substr($lastLine, -1) === ',') {
-//                // 情况2：最后一条数据有逗号
-//                $arrayContent .= "\n    $newItem";
-//            } else {
-//                // 情况3：没有逗号，添加逗号再添加内容
-//                $arrayContent .= ",\n    $newItem";
-//            }
-//
-//            // 构造完整的文件内容并写回文件
-//            $newContent = preg_replace('/return\s*\[.*\];/s', "return [$arrayContent\n];", $content);
-//            file_put_contents($filePath, $newContent);
-//
-//            echo "Added $newItem to $filePath\n";
         }
     }
 }
