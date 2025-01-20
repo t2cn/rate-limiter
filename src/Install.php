@@ -71,6 +71,7 @@ class Install
                 // 检查文件内容中是否已经包含 'T2\RateLimiter\Bootstrap::class'
                 if (!str_contains($fileContents, 'T2\RateLimiter\Bootstrap::class')) {
                     // 如果没有包含，则追加内容
+                    // 在数组的末尾插入 T2\RateLimiter\Bootstrap::class
                     $fileContents = rtrim($fileContents, "\n") . ",\n    T2\\RateLimiter\\Bootstrap::class\n];";
 
                     // 写回修改后的文件内容
