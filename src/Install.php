@@ -139,6 +139,6 @@ class Install
     protected static function findHelper(): void
     {
         // Install.php in T2 engine
-        require_once __DIR__ . '/vendor/framework/src/App/helpers.php';
+        require_once __DIR__ . '/../vendor/t2cn/framework/src/App/helpers.php';
     }
 }
