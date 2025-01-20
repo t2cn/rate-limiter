@@ -109,8 +109,10 @@ class Install
             // 获取数组内容
             $arrayContent = $matches[1];
             $lines        = explode("\n", $arrayContent);
-            var_dump($lines);
-//            $lastLine = trim(end($lines));
+            // 使用 array_filter() 过滤掉空元素
+            $filteredArray = array_filter($lines);
+            var_dump($filteredArray);
+            $lastLine = trim(end($lines));
 //
 //            // 判断数组最后一条记录的情况
 //            if (empty($lastLine)) {
