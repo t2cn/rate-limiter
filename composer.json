@@ -5,7 +5,6 @@
   "description": "T2-Engine plugin t2cn/rate-limiter",
   "require": {
     "php": ">=8.3",
-    "ext-apcu": "*",
     "ext-redis": "*"
   },
   "require-dev": {
