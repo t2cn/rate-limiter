@@ -1,0 +1,17 @@
+{
+  "name": "t2cn/rate-limiter",
+  "type": "library",
+  "license": "MIT",
+  "description": "T2-Engine plugin t2cn/rate-limiter",
+  "require": {
+    "php": ">=8.3"
+  },
+  "require-dev": {
+    "t2cn/engine": "^1.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "T2\\RateLimiter\\": "src"
+    }
+  }
+}
