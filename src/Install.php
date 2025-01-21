@@ -96,6 +96,8 @@ class Install
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
+                    var_dump($arrayContent);
+                    echo "\n";
                     // 使用正则表达式提取方括号中的内容
                     preg_match('/\[(.*?)\]/', $arrayContent, $matches);
                     // 如果提取成功，转换为 PHP 数组
