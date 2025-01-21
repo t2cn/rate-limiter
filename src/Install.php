@@ -96,21 +96,22 @@ class Install
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
-                    var_dump($arrayContent);
-                    echo "\n";
-                    // 使用正则表达式提取方括号中的内容
-                    preg_match('/\[(.*?)\]/', $arrayContent, $matches);
-                    // 如果提取成功，转换为 PHP 数组
-                    if (isset($matches[1])) {
-                        // 去除不必要的空格，确保类名格式正确
-                        $arrayContent = $matches[1];
-                        // 将提取的类名作为数组元素并转换为数组
-                        $array = explode(', ', $arrayContent);
-                        // 输出结果
-                        var_dump($array);
-                    } else {
-                        echo "No array found in the string.\n";
+                    // 使用正则表达式提取每个键对应的类名数组
+                    preg_match_all("/'([^']+)' => \[\s*([^]]+)\s*\]/", $arrayContent, $matches);
+                    // 初始化结果数组
+                    $result = [];
+                    // 遍历每个匹配的键值对
+                    foreach ($matches[1] as $index => $key) {
+                        // 获取数组中的类名部分
+                        $classNames = $matches[2][$index];
+                        // 清理类名部分并转为数组
+                        $classNames      = preg_replace('/\\\T2\\\/', '', $classNames); // 去除转义的反斜杠
+                        $classNamesArray = array_map('trim', explode(',', $classNames)); // 分割类名并去除空格
+                        // 将每个键的值设置为数组
+                        $result[$key] = $classNamesArray;
                     }
+                    // 输出结果
+                    var_dump($result);
                 }
                 break;
             default:
