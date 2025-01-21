@@ -33,9 +33,10 @@ class Install
             $targetPath = base_path() . "/$dest"; // 目标文件路径
             // 拷贝源文件
 
-            if (!copy($sourcePath, $targetPath)) {
-                echo "Failed to copy directory: $sourcePath to $targetPath\n";
-            }
+            var_dump(!copy($sourcePath, $targetPath));
+//            if (!copy($sourcePath, $targetPath)) {
+//                echo "Failed to copy directory: $sourcePath to $targetPath\n";
+//            }
 
 //            if (!self::copyDirectory($sourcePath, $targetPath)) {
 //                echo "Failed to copy directory: $sourcePath to $targetPath\n";
