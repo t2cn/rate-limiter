@@ -167,7 +167,7 @@ class Install
                 $newReturnContent = "return [$arrayContent];";
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
-            case 'T2\RateLimiter\Limiter::class':
+            case 'T2\\RateLimiter\\Limiter::class':
                 // 使用正则表达式提取方括号中的内容
                 if (!preg_match('/\[(.*?)\]/', $arrayContent, $matches)) {
                     echo "No valid content found inside brackets.\n";
