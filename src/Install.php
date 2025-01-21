@@ -210,19 +210,4 @@ class Install
         return in_array($composerData['name'], $haystack, true);
     }
 
-
-    /**
-     * Read file content
-     * @param string $filePath
-     * @return string|false
-     */
-    protected static function readFile(string $filePath): false|string
-    {
-        if (!file_exists($filePath)) {
-            echo "File not found: $filePath\n";
-            return false;
-        }
-
-        return file_get_contents($filePath);
-    }
 }
