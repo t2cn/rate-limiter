@@ -166,7 +166,7 @@ class Install
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
             case 'T2\RateLimiter\Limiter::class':
-                var_dump(111111);
+                var_dump($fileContent);
                 break;
             default:
                 echo "An error occurred\n";
