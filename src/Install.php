@@ -61,6 +61,7 @@ class Install
 
         // 读取文件内容
         $fileContent = file_get_contents($filePath);
+        var_dump($fileContent);
         if (!$fileContent) {
             echo "Failed to read file: $filePath\n";
             return;
@@ -93,13 +94,6 @@ class Install
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
-                if (isset($matches[1])) {
-                    // 补全 JSON 格式并进行解码
-                    $json = '{' . $matches[1] . '}';
-                    var_dump($json);
-                    $array = json_decode($json, true);
-                    var_dump($array);
-                }
                 break;
             default:
                 echo "No action was taken\n";
