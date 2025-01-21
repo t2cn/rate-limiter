@@ -59,7 +59,7 @@ class Install
     public static function installByRelation(): void
     {
         $targetPath = '';
-        // 遍历路径关系数组进行处理
+        // 遍历路径关系数组进行复制文件处理
         foreach (static::$pathRelation as $source => $dest) {
             $sourcePath = __DIR__ . "/$source"; // 源路径
             $targetPath = base_path() . "/$dest"; // 目标路径
@@ -68,6 +68,7 @@ class Install
                 echo "Failed to copy directory: $sourcePath to $targetPath\n";
             }
         }
+
         // 更新 bootstrap.php 文件
         $bootstrapFilePath = "$targetPath/bootstrap.php";
         static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
@@ -86,10 +87,8 @@ class Install
         // 遍历路径关系数组进行处理
         foreach (static::$pathRelation as $dest) {
             $file = base_path() . "/$dest/limiter.php"; // 删除的文件
-
             // 删除文件
             self::deleteFile($file);
-
             // 更新 bootstrap.php 文件
             $targetFilePath = base_path() . "/$dest/bootstrap.php";
             static::removeFromArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
@@ -134,22 +133,19 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        var_dump($filePath);
-//
-//        // 读取文件内容
-//        $fileContent = self::readFile($filePath);
-//        if ($fileContent === false) {
-//            return;
-//        }
-//
-//        // 查找并提取数组内容
-//        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-//            echo "No return array found in file: $filePath\n";
-//            return;
-//        }
-//
-//        // 格式化数组内容并检查是否已有该项
-//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        // 读取文件内容
+        $fileContent = self::readFile($filePath);
+        if ($fileContent === false) {
+            return;
+        }
+        // 查找并提取数组内容
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+        // 格式化数组内容并检查是否已有该项
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        var_dump($arrayContent);
 //        if (str_contains($arrayContent, $newItem)) {
 //            echo "Item already exists in array: $newItem\n";
 //            return;
