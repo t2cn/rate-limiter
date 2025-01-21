@@ -96,27 +96,20 @@ class Install
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
-                    // 使用正则表达式提取每个键对应的类名数组
-                    preg_match_all("/'([^']+)' => \[\s*([^]]+)\s*\]/", $arrayContent, $matches);
+
+                    // 匹配键和对应的类名数组
+                    preg_match_all("/'([^']+)' => \[(.*?)\]/s", $arrayContent, $matches);
                     // 初始化结果数组
                     $result = [];
-
-                    var_dump($arrayContent);
-//                    var_dump(111111111);
-//                    // 遍历每个匹配的键值对
-//                    foreach ($matches[1] as $index => $key) {
-//                        var_dump($index);
-//                        // 获取数组中的类名部分
-//                        $classNames = $matches[2][$index];
-//                        // 清理类名部分，去除不需要的转义字符和额外空格
-//                        $classNamesArray = array_map('trim', explode(',', $classNames)); // 分割类名并去除空格
-//                        // 过滤掉空字符串，避免多余的空项
-//                        $classNamesArray = array_filter($classNamesArray, fn($item) => !empty($item));
-//                        // 将每个键的值设置为数组
-//                        $result[$key] = array_values($classNamesArray); // 使用 array_values 来重新索引数组
-//                    }
-//                    // 输出结果
-//                    var_dump($result);
+                    // 遍历每个匹配的键值对
+                    foreach ($matches[1] as $index => $key) {
+                        // 直接将类名提取为数组（按逗号分隔）
+                        $classNames = array_map('trim', explode(',', $matches[2][$index]));
+                        // 将每个键的值设置为数组
+                        $result[$key] = $classNames;
+                    }
+                    // 输出结果
+                    var_dump($result);
                 }
                 break;
             default:
