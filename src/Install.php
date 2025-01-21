@@ -149,18 +149,21 @@ class Install
             echo "Item already exists in array: $newItem\n";
             return;
         }
-        var_dump($newItem);
-//        switch ($newItem) {
-//            case 'T2\\RateLimiter\\Bootstrap::class':
-//                // 添加新项到数组末尾
-//                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-//                // 更新文件内容
-//                $newReturnContent = "return [$arrayContent];";
-//                self::updateFileContent($filePath, $fileContent, $newReturnContent);
-//                break;
-//            case 'T2\\RateLimiter\\Limiter::class':
-//                // 4. 将提取的字符串转换为数组
-//                $arrayContent = $matches[1];
+
+        //string(31) "T2\RateLimiter\Bootstrap::class"
+        //string(29) "T2\RateLimiter\Limiter::class"
+        switch ($newItem) {
+            case 'T2\\RateLimiter\\Bootstrap::class':
+                // 添加新项到数组末尾
+                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+                // 更新文件内容
+                $newReturnContent = "return [$arrayContent];";
+                self::updateFileContent($filePath, $fileContent, $newReturnContent);
+                break;
+            case 'T2\\RateLimiter\\Limiter::class':
+                // 4. 将提取的字符串转换为数组
+                $arrayContent = $matches[1];
+                var_dump($arrayContent);
 //                // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
 //                // 使用 eval 让 PHP 解析它
 //                $array = eval('return [' . $arrayContent . '];');
@@ -198,10 +201,10 @@ class Install
 //
 //                $newReturnContent = "return [$formattedString];";
 //                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
-//                break;
-//            default:
-//                echo "An error occurred\n";
-//        }
+                break;
+            default:
+                echo "An error occurred\n";
+        }
 
     }
 
@@ -287,12 +290,10 @@ class Install
             echo "Failed to update file: $filePath\n";
             return;
         }
-
         if (file_put_contents($filePath, $updatedContent) === false) {
             echo "Failed to write file: $filePath\n";
             return;
         }
-
         echo "Updated array in file: $filePath\n";
     }
 
