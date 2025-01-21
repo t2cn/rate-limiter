@@ -168,24 +168,8 @@ class Install
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
             case 'T2\RateLimiter\Limiter::class':
-                // 使用正则提取方括号中的内容
-                if (preg_match('/\[@\]=>\[(.*?)\]/', $arrayContent, $matches)) {
-                    $contentInsideBrackets = $matches[1];  // 提取到的数组内容，如 T2\RateLimiter\Limiter::class
-
-                    // 判断内容是否以逗号结尾，如果有则直接追加，否则加上逗号再追加
-                    if (str_ends_with($contentInsideBrackets, ',')) {
-                        $contentInsideBrackets .= $newItem;
-                    } else {
-                        $contentInsideBrackets .= ',' . $newItem;
-                    }
-
-                    // 构建新的字符串
-                    $newStr = "'@'=>[" . $contentInsideBrackets . "]";
-
-                    echo $newStr;  // 输出更新后的字符串
-                } else {
-                    echo "No valid array content found.\n";
-                }
+                // 格式化数组内容并检查是否已有该项
+                var_dump($arrayContent);
                 break;
             default:
                 echo "An error occurred\n";
