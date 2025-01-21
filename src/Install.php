@@ -67,6 +67,10 @@ class Install
             // 更新 bootstrap.php 文件
             $targetFilePath = "$targetPath/bootstrap.php";
             static::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+
+            // 更新 middleware.php 文件
+            $targetFilePath = "$targetPath/middleware.php";
+            static::addToArray($targetFilePath, 'T2\\RateLimiter\\Limiter::class');
         }
     }
 
@@ -142,25 +146,32 @@ class Install
             return;
         }
 
-        // 查找并提取数组内容
-        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-            echo "No return array found in file: $filePath\n";
-            return;
+        switch ($newItem) {
+            case 'T2\\RateLimiter\\Bootstrap::class':
+                // 查找并提取数组内容
+                if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+                    echo "No return array found in file: $filePath\n";
+                    return;
+                }
+                // 格式化数组内容并检查是否已有该项
+                $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+                if (str_contains($arrayContent, $newItem)) {
+                    echo "Item already exists in array: $newItem\n";
+                    return;
+                }
+                // 添加新项到数组末尾
+                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+                // 更新文件内容
+                $newReturnContent = "return [$arrayContent];";
+                self::updateFileContent($filePath, $fileContent, $newReturnContent);
+                break;
+            case 'T2\RateLimiter\Limiter::class':
+                var_dump(111111);
+                break;
+            default:
+                echo "An error occurred\n";
         }
 
-        // 格式化数组内容并检查是否已有该项
-        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        if (str_contains($arrayContent, $newItem)) {
-            echo "Item already exists in array: $newItem\n";
-            return;
-        }
-
-        // 添加新项到数组末尾
-        $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-
-        // 更新文件内容
-        $newReturnContent = "return [$arrayContent];";
-        self::updateFileContent($filePath, $fileContent, $newReturnContent);
     }
 
     /**
