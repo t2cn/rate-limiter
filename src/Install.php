@@ -169,8 +169,6 @@ class Install
             return;
         }
         $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        //string(63) "Session::class,LaravelDb::class,T2\RateLimiter\Bootstrap::class"
-        //string(66) "'@'=>[T2\RateLimiter\Limiter::class,T2\RateLimiter\Limiter::class]"
         if (!str_contains($arrayContent, $itemToRemove)) {
             echo "Item not found in array: $itemToRemove\n";
             return;
@@ -178,8 +176,10 @@ class Install
         $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
         $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
         $newReturnContent = "return [$arrayContent];";
-        var_dump($newReturnContent);
-//        self::updateFileContent($filePath, $fileContent, $newReturnContent);
+        $updatedContent   = preg_replace('/return\s*\[.*?\];/s', $newReturnContent, $fileContent);
+        if ($updatedContent === null || file_put_contents($filePath, $updatedContent) === false) {
+            echo "Failed to write file: $filePath\n";
+        }
     }
 
     /**
@@ -224,19 +224,5 @@ class Install
         }
 
         return file_get_contents($filePath);
-    }
-
-    /**
-     * Update file content
-     * @param string $filePath
-     * @param string $oldContent
-     * @param string $newContent
-     */
-    protected static function updateFileContent(string $filePath, string $oldContent, string $newContent): void
-    {
-        $updatedContent = preg_replace('/return\s*\[.*?\];/s', $newContent, $oldContent);
-        if ($updatedContent === null || file_put_contents($filePath, $updatedContent) === false) {
-            echo "Failed to write file: $filePath\n";
-        }
     }
 }
