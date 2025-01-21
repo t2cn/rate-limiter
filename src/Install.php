@@ -71,9 +71,9 @@ class Install
         // 更新 bootstrap.php 文件
         $bootstrapFilePath = "$targetPath/bootstrap.php";
         static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
-//        // 更新 middleware.php 文件
-//        $middlewareFilePath = "$targetPath/middleware.php";
-//        static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
+        // 更新 middleware.php 文件
+        $middlewareFilePath = "$targetPath/middleware.php";
+        static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
     }
 
     /**
@@ -134,77 +134,79 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        // 读取文件内容
-        $fileContent = self::readFile($filePath);
-        if ($fileContent === false) {
-            return;
-        }
-
-        // 查找并提取数组内容
-        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-            echo "No return array found in file: $filePath\n";
-            return;
-        }
-
-        // 格式化数组内容并检查是否已有该项
-        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        if (str_contains($arrayContent, $newItem)) {
-            echo "Item already exists in array: $newItem\n";
-            return;
-        }
-
-        switch ($newItem) {
-            case 'T2\\RateLimiter\\Bootstrap::class':
-                // 添加新项到数组末尾
-                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-                // 更新文件内容
-                $newReturnContent = "return [$arrayContent];";
-                self::updateFileContent($filePath, $fileContent, $newReturnContent);
-                break;
-            case 'T2\\RateLimiter\\Limiter::class':
-                // 4. 将提取的字符串转换为数组
-                $arrayContent = $matches[1];
-                // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
-                // 使用 eval 让 PHP 解析它
-                $array = eval('return [' . $arrayContent . '];');
-                // 检查 '@' 键是否存在，并确保值是数组
-                if (isset($array['@']) && is_array($array['@'])) {
-                    // 判断是否已经包含该项，如果没有，则添加
-                    if (!in_array($newItem, $array['@'], true)) {
-                        $array['@'][] = $newItem;
-                    }
-                } else {
-                    // 如果 '@' 键不存在或不是数组，初始化它
-                    $array['@'] = [$newItem];
-                }
-                // 自定义函数来将数组转换为所需格式的字符串
-                function arrayToString($array): string
-                {
-                    $result = '';
-                    foreach ($array as $key => $value) {
-                        // 处理键，确保格式正确
-                        $key = "'" . addslashes($key) . "'";
-                        // 处理值（数组），将每个类名以逗号分隔并加上类的形式
-                        $valueStr = array_map(function ($item) {
-                            $newItem = $item . '::class';
-                            return '\\' . $newItem;
-                        }, $value);
-                        // 转换为数组格式的字符串
-                        $result .= $key . ' => [' . implode(', ', $valueStr) . '], ';
-                    }
-                    // 去掉末尾的多余逗号和空格
-                    return rtrim($result, ', ');
-                }
-
-                // 调用函数，转换数组为字符串
-                $formattedString = arrayToString($array);
-
-                $newReturnContent = "return [$formattedString];";
-                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
-                break;
-            default:
-                echo "An error occurred\n";
-        }
+        var_dump($filePath);
+//
+//        // 读取文件内容
+//        $fileContent = self::readFile($filePath);
+//        if ($fileContent === false) {
+//            return;
+//        }
+//
+//        // 查找并提取数组内容
+//        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+//            echo "No return array found in file: $filePath\n";
+//            return;
+//        }
+//
+//        // 格式化数组内容并检查是否已有该项
+//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+//        if (str_contains($arrayContent, $newItem)) {
+//            echo "Item already exists in array: $newItem\n";
+//            return;
+//        }
+//
+//        switch ($newItem) {
+//            case 'T2\\RateLimiter\\Bootstrap::class':
+//                // 添加新项到数组末尾
+//                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+//                // 更新文件内容
+//                $newReturnContent = "return [$arrayContent];";
+//                self::updateFileContent($filePath, $fileContent, $newReturnContent);
+//                break;
+//            case 'T2\\RateLimiter\\Limiter::class':
+//                // 4. 将提取的字符串转换为数组
+//                $arrayContent = $matches[1];
+//                // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
+//                // 使用 eval 让 PHP 解析它
+//                $array = eval('return [' . $arrayContent . '];');
+//                // 检查 '@' 键是否存在，并确保值是数组
+//                if (isset($array['@']) && is_array($array['@'])) {
+//                    // 判断是否已经包含该项，如果没有，则添加
+//                    if (!in_array($newItem, $array['@'], true)) {
+//                        $array['@'][] = $newItem;
+//                    }
+//                } else {
+//                    // 如果 '@' 键不存在或不是数组，初始化它
+//                    $array['@'] = [$newItem];
+//                }
+//                // 自定义函数来将数组转换为所需格式的字符串
+//                function arrayToString($array): string
+//                {
+//                    $result = '';
+//                    foreach ($array as $key => $value) {
+//                        // 处理键，确保格式正确
+//                        $key = "'" . addslashes($key) . "'";
+//                        // 处理值（数组），将每个类名以逗号分隔并加上类的形式
+//                        $valueStr = array_map(function ($item) {
+//                            $newItem = $item . '::class';
+//                            return '\\' . $newItem;
+//                        }, $value);
+//                        // 转换为数组格式的字符串
+//                        $result .= $key . ' => [' . implode(', ', $valueStr) . '], ';
+//                    }
+//                    // 去掉末尾的多余逗号和空格
+//                    return rtrim($result, ', ');
+//                }
+//
+//                // 调用函数，转换数组为字符串
+//                $formattedString = arrayToString($array);
+//
+//                $newReturnContent = "return [$formattedString];";
+//                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
+//                break;
+//            default:
+//                echo "An error occurred\n";
+//        }
 
     }
 
