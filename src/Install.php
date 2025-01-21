@@ -169,7 +169,12 @@ class Install
                 break;
             case 'T2\RateLimiter\Limiter::class':
                 // 格式化数组内容并检查是否已有该项
-                var_dump($arrayContent);
+                if (preg_match('/\[@\]=>\[(.*?)\]/', $arrayContent, $matches)) {
+                    $contentInsideBrackets = $matches[1];  // 提取到的数组内容，如 T2\RateLimiter\LimiterA::class
+                    echo "Extracted content: " . $contentInsideBrackets . "\n";  // 输出提取的内容
+                } else {
+                    echo "No valid array content found.\n";
+                }
                 break;
             default:
                 echo "An error occurred\n";
