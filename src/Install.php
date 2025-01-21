@@ -169,11 +169,6 @@ class Install
 
                 // 检查 '@' 键是否存在，并确保值是数组
                 if (isset($array['@']) && is_array($array['@'])) {
-                    // 调用函数，转换数组为字符串
-                    var_dump($array);
-//                    $formattedString = arrayToString($array);
-//                    var_dump($formattedString);
-
                     // 判断是否已经包含该项，如果没有，则添加
                     if (!in_array($newItem, $array['@'], true)) {
                         $array['@'][] = $newItem;
@@ -192,6 +187,7 @@ class Install
                         $key = "'" . addslashes($key) . "'";
                         // 处理值（数组），将每个类名以逗号分隔并加上类的形式
                         $valueStr = array_map(function ($item) {
+                            var_dump($item);
                             $newItem = $item . '::class';
                             return '\\' . $item;
                         }, $value);
