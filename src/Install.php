@@ -14,6 +14,7 @@ class Install
      */
     protected static array $pathRelation = [
         'config/limiter.php' => 'config/limiter.php',
+        'config/test.php'    => 'config/test.php',
     ];
 
     /**
