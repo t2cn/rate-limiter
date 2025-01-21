@@ -87,11 +87,10 @@ class Install
                 $arrayContent = rtrim($arrayContent, ', ');
                 // 如果数组内容已经有项，添加逗号和空格，再追加新项
                 $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
-                // 更新文件内容
-                $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
+                $oArrayContent = $arrayContent;
                 if (!str_contains($arrayContent, '@')) {
                     echo "'@' not found in the string.\n";
                     return;
@@ -106,7 +105,6 @@ class Install
                 }
                 // 截取 '@' 前一位到 ']' 后一位的字符串
                 $substring = substr($arrayContent, $atPosition - 1, $closeBracketPosition - $atPosition + 2);
-                var_dump($substring);
                 // 使用正则表达式提取中括号内的内容
                 if (!preg_match("/\[(.*?)\]/", $substring, $matches)) {
                     echo "No content found inside brackets.\n";
@@ -118,18 +116,17 @@ class Install
                 $arrayContent .= ($arrayContent ? ',' : '') . "\\T2\\RateLimiter\\LimiterB::class";
                 // 构造替换后的 '@' 区间字符串
                 $newString = "'@'=>[" . $arrayContent . ']';
-                var_dump($newString);
                 // 确定替换的起点和长度
                 $start  = $atPosition - 1;
                 $length = $closeBracketPosition - $start + 1;
                 // 替换原字符串的指定部分
-                $arrayContent = substr_replace($arrayContent, $newString, $start, $length);
-                var_dump($arrayContent);
+                $arrayContent = substr_replace($oArrayContent, $newString, $start, $length);
                 break;
             default:
                 echo "No action was taken\n";
         }
-
+        // 更新文件内容
+        $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
         // 写回更新后的文件内容
         if (file_put_contents($filePath, $fileContent) === false) {
             echo "Failed to update file: $filePath\n";
