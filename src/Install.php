@@ -74,6 +74,7 @@ class Install
         // 根据内容
         switch ($newItem) {
             case 'T2\\RateLimiter\\Bootstrap::class':
+            case 'T2\RateLimiter\Bootstrap::class':
                 // 获取数组内容并去除空格、换行符等
                 $arrayContent = preg_replace('/\s+/', '', $matches[1]);
                 // 检查要添加的内容是否已经存在
@@ -91,7 +92,8 @@ class Install
                 $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
-                var_dump($newItem);
+            case 'T2\RateLimiter\Limiter::class':
+                var_dump($matches);
                 break;
             default:
                 echo "No action was taken\n";
