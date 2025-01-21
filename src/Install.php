@@ -94,7 +94,11 @@ class Install
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
                 if (isset($matches[1])) {
-                    var_dump($matches[1]);
+                    // 补全 JSON 格式并进行解码
+                    $json = '{' . $matches[1] . '}';
+                    var_dump($json);
+                    $array = json_decode($json, true);
+                    var_dump($array);
                 }
                 break;
             default:
