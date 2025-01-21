@@ -39,11 +39,11 @@ class Install
         }
 
         // 更新 bootstrap.php 文件内容
-        $bootstrapFilePath = base_path() . "/config/bootstrap.php"; // string(71) "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php"; // "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
         static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
         // 更新 middleware.php 文件内容
-        $middlewareFilePath = base_path() . "/config/middleware.php"; // string(71) "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
-        var_dump($middlewareFilePath);
+        $middlewareFilePath = base_path() . "/config/middleware.php"; // "/Users/dev/Develop.localized/scbtl/engine-multiple/config/middleware.php"
+        static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
     }
 
     /**
@@ -71,28 +71,31 @@ class Install
             echo "No return array found in file: $filePath\n";
             return;
         }
-
-        // 获取数组内容并去除空格、换行符等
-        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-
-        // 检查要添加的内容是否已经存在
-        if (str_contains($arrayContent, $newItem)) {
-            echo "Item already exists in array: $newItem\n";
-            return;
+        // 根据内容
+        switch ($newItem) {
+            case 'T2\\RateLimiter\\Bootstrap::class':
+                // 获取数组内容并去除空格、换行符等
+                $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+                // 检查要添加的内容是否已经存在
+                if (str_contains($arrayContent, $newItem)) {
+                    echo "Item already exists in array: $newItem\n";
+                    return;
+                }
+                // 格式化数组内容，确保逗号后有空格
+                $arrayContent = preg_replace('/,(?!$)(?=\S)/', ', ', $arrayContent);
+                // 去掉末尾的逗号和空格
+                $arrayContent = rtrim($arrayContent, ', ');
+                // 如果数组内容已经有项，添加逗号和空格，再追加新项
+                $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
+                // 更新文件内容
+                $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
+                break;
+            case 'T2\\RateLimiter\\Limiter::class':
+                var_dump($newItem);
+                break;
+            default:
+                echo "No action was taken\n";
         }
-
-        // 格式化数组内容，确保逗号后有空格
-        $arrayContent = preg_replace('/,(?!$)(?=\S)/', ', ', $arrayContent);
-
-        // 去掉末尾的逗号和空格
-        $arrayContent = rtrim($arrayContent, ', ');
-
-        // 如果数组内容已经有项，添加逗号和空格，再追加新项
-        $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
-
-        // 更新文件内容
-        $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
-
         // 写回更新后的文件内容
         if (file_put_contents($filePath, $fileContent) === false) {
             echo "Failed to update file: $filePath\n";
