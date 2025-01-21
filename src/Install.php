@@ -67,7 +67,6 @@ class Install
             // 更新 bootstrap.php 文件
             $targetFilePath = "$targetPath/bootstrap.php";
             static::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
-
             // 更新 middleware.php 文件
             $targetFilePath = "$targetPath/middleware.php";
             static::addToArray($targetFilePath, 'T2\\RateLimiter\\Limiter::class');
@@ -168,14 +167,7 @@ class Install
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
-                // 使用正则表达式提取方括号中的内容
-                if (!preg_match('/\[(.*?)\]/', $arrayContent, $matches)) {
-                    echo "No valid content found inside brackets.\n";
-                }
-                $arrayContent = $matches[1];  // 提取到的内容，T2\RateLimiter\LimiterA::class
-                // 添加新项到数组末尾
-                $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-                var_dump($arrayContent);
+                var_dump(1111);
                 break;
             default:
                 echo "An error occurred\n";
