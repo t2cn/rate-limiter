@@ -58,9 +58,9 @@ class Memory implements DriverInterface
 
     /**
      * @param $ttl
-     * @return int
+     * @return float
      */
-    protected function getExpireTime($ttl): int
+    protected function getExpireTime($ttl): float
     {
         return ceil(time() / $ttl) * $ttl;
     }
