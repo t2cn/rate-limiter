@@ -104,7 +104,9 @@ class Install
                     if (json_last_error() !== JSON_ERROR_NONE) {
                         echo "Invalid JSON format\n";
                     } else {
+                        var_dump("xxx\n");
                         var_dump($array);
+                        var_dump("YYY\n");
                     }
                 }
                 break;
