@@ -187,8 +187,9 @@ class Install
                         $key = "'" . addslashes($key) . "'";
                         // 处理值（数组），将每个类名以逗号分隔并加上类的形式
                         $valueStr = array_map(function ($item) {
-                            var_dump($item);
-                            $newItem = $item . '::class';
+                            if (!str_contains($item, '::class')) {
+                                $item = $item . '::class';
+                            }
                             return '\\' . $item;
                         }, $value);
                         // 转换为数组格式的字符串
