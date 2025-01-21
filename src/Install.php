@@ -38,13 +38,17 @@ class Install
      */
     public static function uninstall(): void
     {
-        // 检查框架是否已安装
-        if (!self::isFrameworkInstalled()) {
-            echo "The 't2cn/framework' package is not installed. Installation aborted.\n";
-            return;
-        }
+        // 遍历路径关系数组进行处理
+        foreach (static::$pathRelation as $dest) {
+            $file = base_path() . "/$dest/limiter.php"; // 删除的文件
 
-        static::uninstallByRelation();
+            // 删除文件
+            self::deleteFile($file);
+
+            // 更新 bootstrap.php 文件
+            $targetFilePath = base_path() . "/$dest/bootstrap.php";
+            static::removeFromArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+        }
     }
 
     /**
@@ -54,28 +58,22 @@ class Install
      */
     public static function installByRelation(): void
     {
+        $targetPath = '';
         // 遍历路径关系数组进行处理
         foreach (static::$pathRelation as $source => $dest) {
             $sourcePath = __DIR__ . "/$source"; // 源路径
             $targetPath = base_path() . "/$dest"; // 目标路径
-
             // 复制目录或文件
             if (!self::copyDirectory($sourcePath, $targetPath)) {
                 echo "Failed to copy directory: $sourcePath to $targetPath\n";
-                continue;
             }
-
-            echo "Created: $targetPath\n";
-
-            // 更新 bootstrap.php 文件
-            $bootstrapFilePath = "$targetPath/bootstrap.php";
-            var_dump($bootstrapFilePath);
-            static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
-            // 更新 middleware.php 文件
-            $middlewareFilePath = "$targetPath/middleware.php";
-            var_dump($middlewareFilePath);
-            static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
         }
+        // 更新 bootstrap.php 文件
+        $bootstrapFilePath = "$targetPath/bootstrap.php";
+        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+//        // 更新 middleware.php 文件
+//        $middlewareFilePath = "$targetPath/middleware.php";
+//        static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
     }
 
     /**
@@ -106,27 +104,23 @@ class Install
     protected static function isFrameworkInstalled(): bool
     {
         $composerFilePath = base_path() . '/composer.json';
-
         // 检查 composer.json 文件是否存在
         if (!file_exists($composerFilePath)) {
             echo "composer.json not found. Cannot verify framework installation.\n";
             return false;
         }
-
         // 读取 composer.json 文件内容
         $composerContent = file_get_contents($composerFilePath);
         if ($composerContent === false) {
             echo "Failed to read composer.json.\n";
             return false;
         }
-
         // 解析 JSON 数据
         $composerData = json_decode($composerContent, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo "Invalid composer.json format.\n";
             return false;
         }
-
         // 检查是否存在 `t2cn/framework` 包
         $requirePackages = $composerData['require'] ?? [];
         return isset($requirePackages['t2cn/framework']);
@@ -317,21 +311,17 @@ class Install
         if (!is_dir($source)) {
             return false;
         }
-
         // 如果目标目录不存在，则创建
         if (!is_dir($destination) && !mkdir($destination, 0755, true)) {
             return false;
         }
-
         // 递归复制目录内容
         foreach (scandir($source) as $item) {
             if ($item === '.' || $item === '..') {
                 continue;
             }
-
             $srcPath  = "$source/$item";
             $destPath = "$destination/$item";
-
             if (is_dir($srcPath)) {
                 if (!self::copyDirectory($srcPath, $destPath)) {
                     return false;
@@ -342,7 +332,7 @@ class Install
                 }
             }
         }
-
+        echo "Created: $destination\n";
         return true;
     }
 }
