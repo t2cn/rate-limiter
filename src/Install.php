@@ -146,13 +146,14 @@ class Install
             return;
         }
 
+        // 查找并提取数组内容
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+
         switch ($newItem) {
             case 'T2\\RateLimiter\\Bootstrap::class':
-                // 查找并提取数组内容
-                if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-                    echo "No return array found in file: $filePath\n";
-                    return;
-                }
                 // 格式化数组内容并检查是否已有该项
                 $arrayContent = preg_replace('/\s+/', '', $matches[1]);
                 if (str_contains($arrayContent, $newItem)) {
@@ -166,7 +167,7 @@ class Install
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
             case 'T2\RateLimiter\Limiter::class':
-                var_dump($fileContent);
+                var_dump($matches);
                 break;
             default:
                 echo "An error occurred\n";
