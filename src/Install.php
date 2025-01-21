@@ -68,11 +68,13 @@ class Install
             echo "Created: $targetPath\n";
 
             // 更新 bootstrap.php 文件
-            $targetFilePath = "$targetPath/bootstrap.php";
-            static::addToArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+            $bootstrapFilePath = "$targetPath/bootstrap.php";
+            var_dump($bootstrapFilePath);
+            static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
             // 更新 middleware.php 文件
-            $targetFilePath = "$targetPath/middleware.php";
-            static::addToArray($targetFilePath, 'T2\\RateLimiter\\Limiter::class');
+            $middlewareFilePath = "$targetPath/middleware.php";
+            var_dump($middlewareFilePath);
+            static::addToArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
         }
     }
 
