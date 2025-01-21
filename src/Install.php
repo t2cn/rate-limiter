@@ -68,22 +68,31 @@ class Install
 
         // 正则提取 return 后的数组内容
         if (preg_match('/return\s*(\[\s*.*\s*\]);/s', $fileContent, $matches)) {
-            // 去除多余的空格和换行符，确保数组格式正确
-            $arrayContent = preg_replace('/\s+/', ' ', $matches[1]);
+            // 获取数组内容
+            $arrayContent = $matches[1];
 
-            // 替换类常量（::class）为字符串
+            // 替换类常量（::class）为字符串，加上引号
             $arrayContent = preg_replace_callback('/([a-zA-Z0-9\\\\]+::class)/', function ($matches) {
                 return '"' . $matches[1] . '"'; // 将类常量转为字符串
             }, $arrayContent);
 
-            // 将提取的内容转为 JSON 格式
+            // 为数组中的每个项添加引号，以符合 JSON 格式
+            $arrayContent = preg_replace_callback('/([a-zA-Z0-9\\\\]+(?:\\\?[a-zA-Z0-9\\\\]+)*)(?=\s*(?:,|\]|\s*$))/', function ($matches) {
+                return '"' . $matches[1] . '"'; // 将类名转为字符串
+            }, $arrayContent);
+
+            // 用 JSON 格式包裹起来
             $jsonContent = '{' . $arrayContent . '}';
 
-            // 解析为 PHP 数组
+            // 尝试将其解析为 JSON
             $array = json_decode($jsonContent, true);
 
-            // 输出 JSON 数组
-            echo json_encode($array, JSON_PRETTY_PRINT);
+            if ($array === null) {
+                echo "Error decoding JSON: " . json_last_error_msg();
+            } else {
+                // 输出 JSON 格式化后的数组
+                echo json_encode($array, JSON_PRETTY_PRINT);
+            }
         } else {
             echo "No valid array found in the PHP file.";
         }
