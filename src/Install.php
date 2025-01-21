@@ -87,8 +87,6 @@ class Install
                 $arrayContent = rtrim($arrayContent, ', ');
                 // 如果数组内容已经有项，添加逗号和空格，再追加新项
                 $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
-                // 更新文件内容
-                $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
@@ -121,12 +119,13 @@ class Install
                 $start  = $atPosition - 1;
                 $length = $closeBracketPosition - $start + 1;
                 // 替换原字符串的指定部分
-                $result = substr_replace($arrayContent, $newString, $start, $length);
-                var_dump($result);
+                $arrayContent = substr_replace($arrayContent, $newString, $start, $length);
                 break;
             default:
                 echo "No action was taken\n";
         }
+        // 更新文件内容
+        $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
         // 写回更新后的文件内容
         if (file_put_contents($filePath, $fileContent) === false) {
             echo "Failed to update file: $filePath\n";
