@@ -100,7 +100,8 @@ class Install
                     $json = '{' . $arrayContent . '}';
                     // 将 JSON 字符串转换为 PHP 数组
                     $array = json_decode($json, true);
-                    print_r($array);
+                    var_dump($array);
+                    var_dump(11111);
                 }
                 break;
             default:
