@@ -6,8 +6,10 @@ class Install
 {
     const bool T2_INSTALL = true;
 
+    const array VALID_ENGINE_NAMES = ['t2cn/engine', 't2cn/engine-multiple'];
+
     /**
-     * @var array|string[]
+     * @var array
      */
     protected static array $pathRelation = [
         'config' => 'config',
@@ -19,12 +21,14 @@ class Install
      */
     public static function install(): void
     {
-        if (!self::isFrameworkInstalled()) {
+        var_dump(!self::isFrameworkInstalled(self::VALID_ENGINE_NAMES));
+        if (!self::isFrameworkInstalled(self::VALID_ENGINE_NAMES)) {
+            // 如果没有安装 t2cn/framework 框架，退出不做任何操作
             echo "The 't2cn/framework' package is not installed. Installation aborted.\n";
             return;
         }
 
-        static::installByRelation();
+//        static::installByRelation();
     }
 
     /**
@@ -63,30 +67,30 @@ class Install
 
     /**
      * Check if the framework is installed
+     * @param array $haystack 要对比的名称
      * @return bool
      */
-    protected static function isFrameworkInstalled(): bool
+    protected static function isFrameworkInstalled(array $haystack): bool
     {
         $composerFilePath = base_path() . '/composer.json';
+        // 没有正确的 composer.json 文件
         if (!file_exists($composerFilePath)) {
             echo "composer.json not found. Cannot verify framework installation.\n";
             return false;
         }
-
         $composerContent = file_get_contents($composerFilePath);
+        // 读取 composer.json 文件失败
         if ($composerContent === false) {
             echo "Failed to read composer.json.\n";
             return false;
         }
-
         $composerData = json_decode($composerContent, true);
+        // composer.json 格式无效
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo "Invalid composer.json format.\n";
             return false;
         }
-
-        $requirePackages = $composerData['require'] ?? [];
-        return isset($requirePackages['t2cn/framework']);
+        return in_array($composerData['name'], $haystack, true);
     }
 
     /**
