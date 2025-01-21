@@ -6,15 +6,18 @@ class Install
 {
     const bool T2_INSTALL = true;
 
+    /**
+     * @var array|string[]
+     */
     protected static array $pathRelation = [
         'config' => 'config',
     ];
 
     /**
      * 安装方法
-     *
-     * 检查 `t2cn/framework` 包是否已安装，如果已安装，则执行安装操作
-     * 否则，输出错误信息并停止安装。
+     *  检查 `t2cn/framework` 包是否已安装，如果已安装，则执行安装操作
+     *  否则，输出错误信息并停止安装。
+     * @return void
      */
     public static function install(): void
     {
@@ -30,8 +33,8 @@ class Install
 
     /**
      * 卸载方法
-     *
-     * 根据定义的路径关系卸载相关文件
+     *  根据定义的路径关系卸载相关文件
+     * @return void
      */
     public static function uninstall(): void
     {
@@ -46,8 +49,8 @@ class Install
 
     /**
      * 根据路径关系执行安装操作
-     *
-     * 复制文件或目录，并更新相关配置
+     *  复制文件或目录，并更新相关配置
+     * @return void
      */
     public static function installByRelation(): void
     {
@@ -75,8 +78,8 @@ class Install
 
     /**
      * 根据路径关系执行卸载操作
-     *
-     * 删除文件或目录，并更新相关配置
+     *  删除文件或目录，并更新相关配置
+     * @return void
      */
     public static function uninstallByRelation(): void
     {
@@ -95,9 +98,7 @@ class Install
 
     /**
      * 检查 `t2cn/framework` 是否已安装
-     *
      * 通过检查 `composer.json` 文件中的依赖项来验证框架是否安装。
-     *
      * @return bool 返回框架是否已安装的状态
      */
     protected static function isFrameworkInstalled(): bool
@@ -131,9 +132,7 @@ class Install
 
     /**
      * 向文件中的数组添加项
-     *
      * 该方法会在文件中的数组中添加一个新项（如果该项不存在的话）。
-     *
      * @param string $filePath 文件路径
      * @param string $newItem 要添加的项
      */
@@ -177,9 +176,7 @@ class Install
 
     /**
      * 从文件中的数组中移除项
-     *
      * 该方法会从文件中的数组中移除指定的项（如果存在的话）。
-     *
      * @param string $filePath 文件路径
      * @param string $itemToRemove 要移除的项
      */
@@ -215,9 +212,7 @@ class Install
 
     /**
      * 删除指定文件
-     *
      * 封装删除文件的逻辑，便于复用
-     *
      * @param string $filePath 要删除的文件路径
      */
     protected static function deleteFile(string $filePath): void
@@ -233,13 +228,11 @@ class Install
 
     /**
      * 读取文件内容
-     *
      * 封装读取文件内容的逻辑，避免多次调用 `file_get_contents` 时代码重复
-     *
      * @param string $filePath 文件路径
      * @return string|false 文件内容或失败时返回 false
      */
-    protected static function readFile(string $filePath)
+    protected static function readFile(string $filePath): false|string
     {
         if (!file_exists($filePath)) {
             echo "File not found: $filePath\n";
@@ -251,9 +244,7 @@ class Install
 
     /**
      * 更新文件内容
-     *
      * 更新文件内容的方法，替换原文件内容为新的内容
-     *
      * @param string $filePath 文件路径
      * @param string $oldContent 旧的文件内容
      * @param string $newContent 新的文件内容
@@ -276,9 +267,7 @@ class Install
 
     /**
      * 复制目录或文件
-     *
      * 复制目录及其内容到目标路径
-     *
      * @param string $source 源路径
      * @param string $destination 目标路径
      * @return bool 是否复制成功
