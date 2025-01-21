@@ -200,11 +200,9 @@ class Install
                 }
 
                 // 调用函数，转换数组为字符串
-                $formattedString = arrayToString($array);
-                var_dump($formattedString);
-//
-//                $newReturnContent = "return [$formattedString];";
-//                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
+                $formattedString  = arrayToString($array); // string(72) "'@' => [\T2\RateLimiter\LimiterA::class, \T2\RateLimiter\Limiter::class]"
+                $newReturnContent = "return [$formattedString];";
+                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
                 break;
             default:
                 echo "An error occurred\n";
