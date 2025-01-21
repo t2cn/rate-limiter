@@ -92,7 +92,6 @@ class Install
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
-                var_dump($arrayContent);
                 if (!str_contains($arrayContent, '@')) {
                     echo "'@' not found in the string.\n";
                     return;
@@ -107,6 +106,7 @@ class Install
                 }
                 // 截取 '@' 前一位到 ']' 后一位的字符串
                 $substring = substr($arrayContent, $atPosition - 1, $closeBracketPosition - $atPosition + 2);
+                var_dump($substring);
                 // 使用正则表达式提取中括号内的内容
                 if (!preg_match("/\[(.*?)\]/", $substring, $matches)) {
                     echo "No content found inside brackets.\n";
