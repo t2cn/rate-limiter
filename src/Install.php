@@ -175,11 +175,10 @@ class Install
             echo "Item not found in array: $itemToRemove\n";
             return;
         }
-        var_dump($itemToRemove);
-//
-//        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
-//        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
-//        $newReturnContent = "return [$arrayContent];";
+        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
+        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
+        $newReturnContent = "return [$arrayContent];";
+        var_dump($newReturnContent);
 //        self::updateFileContent($filePath, $fileContent, $newReturnContent);
     }
 
