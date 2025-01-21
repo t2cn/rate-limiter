@@ -9,10 +9,11 @@ class Install
     const array VALID_ENGINE_NAMES = ['t2cn/engine', 't2cn/engine-multiple'];
 
     /**
+     * 定义源文件和目标文件
      * @var array
      */
     protected static array $pathRelation = [
-        'config' => 'config',
+        'config/limiter.php' => 'config/limiter.php',
     ];
 
     /**
@@ -21,14 +22,66 @@ class Install
      */
     public static function install(): void
     {
-        var_dump(!self::isFrameworkInstalled(self::VALID_ENGINE_NAMES));
         if (!self::isFrameworkInstalled(self::VALID_ENGINE_NAMES)) {
             // 如果没有安装 t2cn/framework 框架，退出不做任何操作
             echo "The 't2cn/framework' package is not installed. Installation aborted.\n";
             return;
         }
 
-//        static::installByRelation();
+        foreach (static::$pathRelation as $source => $dest) {
+            $sourcePath = __DIR__ . "/$source"; // 源文件路径
+            $targetPath = base_path() . "/$dest"; // 目标文件路径
+            // 拷贝源文件
+
+            if (!copy($sourcePath, $targetPath)) {
+                echo "Failed to copy directory: $sourcePath to $targetPath\n";
+            }
+
+//            if (!self::copyDirectory($sourcePath, $targetPath)) {
+//                echo "Failed to copy directory: $sourcePath to $targetPath\n";
+//            }
+        }
+
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+    }
+
+    /**
+     * Copy a directory
+     * @param string $source 源文件
+     * @param string $destination
+     * @return bool
+     */
+    protected static function copyDirectory(string $source, string $destination): bool
+    {
+        if (!is_dir($source)) {
+            return false;
+        }
+
+        if (!is_dir($destination) && !mkdir($destination, 0755, true)) {
+            return false;
+        }
+
+        foreach (scandir($source) as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $srcPath  = "$source/$item";
+            $destPath = "$destination/$item";
+
+            if (is_dir($srcPath)) {
+                if (!self::copyDirectory($srcPath, $destPath)) {
+                    return false;
+                }
+            } else {
+                if (!copy($srcPath, $destPath)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -44,25 +97,6 @@ class Install
             $targetFilePath = base_path() . "/$dest/bootstrap.php";
             static::removeFromArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
         }
-    }
-
-    /**
-     * Perform installation based on path relations
-     * @return void
-     */
-    public static function installByRelation(): void
-    {
-        foreach (static::$pathRelation as $source => $dest) {
-            $sourcePath = __DIR__ . "/$source";
-            $targetPath = base_path() . "/$dest";
-
-            if (!self::copyDirectory($sourcePath, $targetPath)) {
-                echo "Failed to copy directory: $sourcePath to $targetPath\n";
-            }
-        }
-
-        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
-        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
     }
 
     /**
@@ -188,43 +222,5 @@ class Install
         if ($updatedContent === null || file_put_contents($filePath, $updatedContent) === false) {
             echo "Failed to write file: $filePath\n";
         }
-    }
-
-    /**
-     * Copy a directory
-     * @param string $source
-     * @param string $destination
-     * @return bool
-     */
-    protected static function copyDirectory(string $source, string $destination): bool
-    {
-        if (!is_dir($source)) {
-            return false;
-        }
-
-        if (!is_dir($destination) && !mkdir($destination, 0755, true)) {
-            return false;
-        }
-
-        foreach (scandir($source) as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-
-            $srcPath  = "$source/$item";
-            $destPath = "$destination/$item";
-
-            if (is_dir($srcPath)) {
-                if (!self::copyDirectory($srcPath, $destPath)) {
-                    return false;
-                }
-            } else {
-                if (!copy($srcPath, $destPath)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
