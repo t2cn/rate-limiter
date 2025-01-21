@@ -140,13 +140,46 @@ class Install
      */
     public static function uninstall(): void
     {
-        foreach (static::$pathRelation as $dest) {
-            $file = base_path() . "/$dest/limiter.php";
-            self::deleteFile($file);
-
-            $targetFilePath = base_path() . "/$dest/bootstrap.php";
-            static::removeFromArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+        $file = base_path() . "/config/limiter.php";
+        // 删除配置文件文件
+        if (is_file($file) && !unlink($file)) {
+            echo "Failed to delete: $file\n";
         }
+        // 移除内容
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+        static::removeFromArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+        $middlewareFilePath = base_path() . "/config/middleware.php";
+        static::removeFromArray($middlewareFilePath, 'T2\\RateLimiter\\Limiter::class');
+    }
+
+    /**
+     * Remove an item from an array in a file
+     * @param string $filePath
+     * @param string $itemToRemove
+     */
+    protected static function removeFromArray(string $filePath, string $itemToRemove): void
+    {
+        if (!file_exists($filePath)) {
+            echo "File not found: $filePath\n";
+            return;
+        }
+        $fileContent = file_get_contents($filePath);
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+        var_dump($matches);
+
+//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+//        if (!str_contains($arrayContent, $itemToRemove)) {
+//            echo "Item not found in array: $itemToRemove\n";
+//            return;
+//        }
+//
+//        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
+//        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
+//        $newReturnContent = "return [$arrayContent];";
+//        self::updateFileContent($filePath, $fileContent, $newReturnContent);
     }
 
     /**
@@ -177,45 +210,6 @@ class Install
         return in_array($composerData['name'], $haystack, true);
     }
 
-    /**
-     * Remove an item from an array in a file
-     * @param string $filePath
-     * @param string $itemToRemove
-     */
-    protected static function removeFromArray(string $filePath, string $itemToRemove): void
-    {
-        $fileContent = self::readFile($filePath);
-        if ($fileContent === false) {
-            return;
-        }
-
-        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-            echo "No return array found in file: $filePath\n";
-            return;
-        }
-
-        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        if (!str_contains($arrayContent, $itemToRemove)) {
-            echo "Item not found in array: $itemToRemove\n";
-            return;
-        }
-
-        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
-        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
-        $newReturnContent = "return [$arrayContent];";
-        self::updateFileContent($filePath, $fileContent, $newReturnContent);
-    }
-
-    /**
-     * Delete a file
-     * @param string $filePath
-     */
-    protected static function deleteFile(string $filePath): void
-    {
-        if (is_file($filePath) && !unlink($filePath)) {
-            echo "Failed to delete: $filePath\n";
-        }
-    }
 
     /**
      * Read file content
