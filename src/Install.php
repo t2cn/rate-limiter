@@ -97,15 +97,19 @@ class Install
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
 
-                    // 匹配键和对应的类名数组
+                    /// 匹配键和对应的类名数组
                     preg_match_all("/'([^']+)' => \[(.*?)\]/s", $arrayContent, $matches);
+
                     // 初始化结果数组
                     $result = [];
+
                     // 遍历每个匹配的键值对
                     foreach ($matches[1] as $index => $key) {
-                        // 直接将类名提取为数组（按逗号分隔）
+                        // 获取类名部分并去除空白字符，按逗号分割
                         $classNames = array_map('trim', explode(',', $matches[2][$index]));
-                        // 将每个键的值设置为数组
+                        // 过滤空白项，确保没有多余的空字符串
+                        $classNames = array_filter($classNames, fn($item) => !empty($item));
+                        // 将每个键的值设置为数组，原样保存类名字符串
                         $result[$key] = $classNames;
                     }
                     // 输出结果
