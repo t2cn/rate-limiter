@@ -50,36 +50,50 @@ class Install
      */
     protected static function addToArray(string $filePath, string $newItem): void
     {
-        // 没有找到指定的文件
+        // 检查文件是否存在
         if (!file_exists($filePath)) {
             echo "File not found: $filePath\n";
             return;
         }
-        // 读取指定的文件内容，如果读取失败
-        if (!$fileContent = file_get_contents($filePath)) {
+
+        // 读取文件内容
+        $fileContent = file_get_contents($filePath);
+        if (!$fileContent) {
             echo "Failed to read file: $filePath\n";
             return;
         }
-        // 从读取到的内容中提取 return[]，内部的内容，如果提取失败
+
+        // 从文件中提取数组内容
         if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
             echo "No return array found in file: $filePath\n";
             return;
         }
-        // 去除字符串中的所有空格、换行符、制表符等空白字符。
+
+        // 获取数组内容并去除空格、换行符等
         $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        // 检查 $arrayContent 中是否包含 要添加的内容，如果包含则不做任何操作
+
+        // 检查要添加的内容是否已经存在
         if (str_contains($arrayContent, $newItem)) {
             echo "Item already exists in array: $newItem\n";
             return;
         }
-        // 组装新的数据
+
+        // 格式化数组内容，确保逗号后有空格
         $arrayContent = preg_replace('/,(?!$)(?=\S)/', ', ', $arrayContent);
+
         // 去掉末尾的逗号和空格
         $arrayContent = rtrim($arrayContent, ', ');
-        // 如果末尾有内容，则加逗号和空格，再添加新项
+
+        // 如果数组内容已经有项，添加逗号和空格，再追加新项
         $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
-        // 更新数据
-        self::updateFileContent($filePath, $fileContent, "return [$arrayContent];");
+
+        // 更新文件内容
+        $fileContent = preg_replace('/return\s*\[(.*?)\];/s', "return [$arrayContent];", $fileContent);
+
+        // 写回更新后的文件内容
+        if (file_put_contents($filePath, $fileContent) === false) {
+            echo "Failed to update file: $filePath\n";
+        }
     }
 
     /**
