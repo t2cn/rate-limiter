@@ -92,6 +92,7 @@ class Install
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
+                var_dump($arrayContent);
                 if (!str_contains($arrayContent, '@')) {
                     echo "'@' not found in the string.\n";
                     return;
