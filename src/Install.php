@@ -123,7 +123,6 @@ class Install
                 $length = $closeBracketPosition - $start + 1;
                 // 替换原字符串的指定部分
                 $arrayContent = substr_replace($arrayContent, $newString, $start, $length);
-                var_dump($arrayContent);
                 break;
             default:
                 echo "No action was taken\n";
