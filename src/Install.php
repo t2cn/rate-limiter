@@ -168,9 +168,8 @@ class Install
             echo "No return array found in file: $filePath\n";
             return;
         }
-        var_dump($matches);
-
-//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        var_dump($arrayContent);
 //        if (!str_contains($arrayContent, $itemToRemove)) {
 //            echo "Item not found in array: $itemToRemove\n";
 //            return;
