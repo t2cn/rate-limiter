@@ -73,7 +73,8 @@ class Install
             return;
         }
         // 组装新的数据
-        $arrayContent .= (!str_ends_with($arrayContent, ',') ? ', ' : '') . $newItem;
+        $arrayContent = preg_replace('/,(?!$)(?=\S)/', ', ', $arrayContent);
+        $arrayContent = rtrim($arrayContent, ', ') . (str_ends_with($arrayContent, ',') ? ' ' : ', ') . $newItem;
         // 更新数据
         self::updateFileContent($filePath, $fileContent, "return [$arrayContent];");
     }
