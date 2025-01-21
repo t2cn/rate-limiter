@@ -92,35 +92,36 @@ class Install
             case 'T2\RateLimiter\Limiter::class':
                 $oArrayContent = $arrayContent;
                 if (!str_contains($arrayContent, '@')) {
-                    echo "'@' not found in the string.\n";
-                    return;
+                    // 构造替换后的 '@' 区间字符串
+                    $arrayContent = "'@'=>[" . $newItem . '],' . $oArrayContent;
+                } else {
+                    // 查找 '@' 符号的起始位置
+                    $atPosition = strpos($arrayContent, '@');
+                    // 查找 '@' 后面第一个 ']' 的位置
+                    $closeBracketPosition = strpos($arrayContent, ']', $atPosition);
+                    if ($closeBracketPosition === false) {
+                        echo "Closing bracket ']' not found.\n";
+                        return;
+                    }
+                    // 截取 '@' 前一位到 ']' 后一位的字符串
+                    $substring = substr($arrayContent, $atPosition - 1, $closeBracketPosition - $atPosition + 2);
+                    // 使用正则表达式提取中括号内的内容
+                    if (!preg_match("/\[(.*?)\]/", $substring, $matches)) {
+                        echo "No content found inside brackets.\n";
+                        return;
+                    }
+                    // 提取中括号内的内容并进行格式化
+                    $arrayContent = rtrim(preg_replace('/,\s*/', ',', $matches[1]), ',');
+                    // 添加新的内容到数组中
+                    $arrayContent .= ($arrayContent ? ',' : '') . $newItem;
+                    // 构造替换后的 '@' 区间字符串
+                    $newString = "'@'=>[" . $arrayContent . ']';
+                    // 确定替换的起点和长度
+                    $start  = $atPosition - 1;
+                    $length = $closeBracketPosition - $start + 1;
+                    // 替换原字符串的指定部分
+                    $arrayContent = substr_replace($oArrayContent, $newString, $start, $length);
                 }
-                // 查找 '@' 符号的起始位置
-                $atPosition = strpos($arrayContent, '@');
-                // 查找 '@' 后面第一个 ']' 的位置
-                $closeBracketPosition = strpos($arrayContent, ']', $atPosition);
-                if ($closeBracketPosition === false) {
-                    echo "Closing bracket ']' not found.\n";
-                    return;
-                }
-                // 截取 '@' 前一位到 ']' 后一位的字符串
-                $substring = substr($arrayContent, $atPosition - 1, $closeBracketPosition - $atPosition + 2);
-                // 使用正则表达式提取中括号内的内容
-                if (!preg_match("/\[(.*?)\]/", $substring, $matches)) {
-                    echo "No content found inside brackets.\n";
-                    return;
-                }
-                // 提取中括号内的内容并进行格式化
-                $arrayContent = rtrim(preg_replace('/,\s*/', ',', $matches[1]), ',');
-                // 添加新的内容到数组中
-                $arrayContent .= ($arrayContent ? ',' : '') . $newItem;
-                // 构造替换后的 '@' 区间字符串
-                $newString = "'@'=>[" . $arrayContent . ']';
-                // 确定替换的起点和长度
-                $start  = $atPosition - 1;
-                $length = $closeBracketPosition - $start + 1;
-                // 替换原字符串的指定部分
-                $arrayContent = substr_replace($oArrayContent, $newString, $start, $length);
                 break;
             default:
                 echo "No action was taken\n";
