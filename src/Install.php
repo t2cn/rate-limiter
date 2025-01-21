@@ -100,6 +100,8 @@ class Install
                     /// 匹配键和对应的类名数组
                     preg_match_all("/'([^']+)' => \[(.*?)\]/s", $arrayContent, $matches);
 
+                    var_dump($matches);
+
                     // 初始化结果数组
                     $result = [];
 
