@@ -98,6 +98,7 @@ class Install
                     $arrayContent = preg_replace('/\s+/', '', $matches[1]); // "'@'=>[\T2\RateLimiter\LimiterA::class,\T2\RateLimiter\LimiterB::class,],'admin'=>[\T2\RateLimiter\LimiterC::class,]"
                     // 匹配键和值的正则表达式
                     preg_match_all("/'([^']+)' => \[(.*?)\]/s", $arrayContent, $matches);
+                    var_dump($matches);
                     // 初始化结果数组
                     $result = [];
                     // 遍历每个匹配的键值对
