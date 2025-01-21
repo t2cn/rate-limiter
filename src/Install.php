@@ -74,7 +74,10 @@ class Install
         }
         // 组装新的数据
         $arrayContent = preg_replace('/,(?!$)(?=\S)/', ', ', $arrayContent);
-        $arrayContent = rtrim($arrayContent, ', ') . (str_ends_with($arrayContent, ',') ? ' ' : ', ') . $newItem;
+        // 去掉末尾的逗号和空格
+        $arrayContent = rtrim($arrayContent, ', ');
+        // 如果末尾有内容，则加逗号和空格，再添加新项
+        $arrayContent .= ($arrayContent ? ', ' : '') . $newItem;
         // 更新数据
         self::updateFileContent($filePath, $fileContent, "return [$arrayContent];");
     }
