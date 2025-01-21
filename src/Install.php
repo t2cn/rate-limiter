@@ -176,29 +176,28 @@ class Install
                     // 如果 '@' 键不存在或不是数组，初始化它
                     $array['@'] = [$newItem];
                 }
-                var_dump($array);
+                // 自定义函数来将数组转换为所需格式的字符串
+                function arrayToString($array): string
+                {
+                    $result = '';
+                    foreach ($array as $key => $value) {
+                        // 处理键，确保格式正确
+                        $key = "'" . addslashes($key) . "'";
+                        // 处理值（数组），将每个类名以逗号分隔并加上类的形式
+                        $valueStr = array_map(function ($item) {
+                            $newItem = $item . '::class';
+                            return '\\' . $newItem;
+                        }, $value);
+                        // 转换为数组格式的字符串
+                        $result .= $key . ' => [' . implode(', ', $valueStr) . '], ';
+                    }
+                    // 去掉末尾的多余逗号和空格
+                    return rtrim($result, ', ');
+                }
 
-//                // 自定义函数来将数组转换为所需格式的字符串
-//                function arrayToString($array): string
-//                {
-//                    $result = '';
-//                    foreach ($array as $key => $value) {
-//                        // 处理键，确保格式正确
-//                        $key = "'" . addslashes($key) . "'";
-//                        // 处理值（数组），将每个类名以逗号分隔并加上类的形式
-//                        $valueStr = array_map(function ($item) {
-//                            $newItem = $item . '::class';
-//                            return '\\' . $newItem;
-//                        }, $value);
-//                        // 转换为数组格式的字符串
-//                        $result .= $key . ' => [' . implode(', ', $valueStr) . '], ';
-//                    }
-//                    // 去掉末尾的多余逗号和空格
-//                    return rtrim($result, ', ');
-//                }
-//
-//                // 调用函数，转换数组为字符串
-//                $formattedString = arrayToString($array);
+                // 调用函数，转换数组为字符串
+                $formattedString = arrayToString($array);
+                var_dump($formattedString);
 //
 //                $newReturnContent = "return [$formattedString];";
 //                self::updateFileContent($fileContent, $fileContent, $newReturnContent);
