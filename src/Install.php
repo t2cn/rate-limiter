@@ -96,19 +96,9 @@ class Install
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
-                    var_dump($arrayContent);
-                    // 将内容转换为 JSON 格式
-                    $arrayContent = str_replace(['\'', '\"'], ['"', '"'], $arrayContent); // 处理引号，确保 JSON 格式
-                    $arrayContent = '[' . $arrayContent . ']'; // 将其包裹成数组形式
-                    $array        = json_decode($arrayContent, true); // 使用 json_decode 解析
-
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        echo "Invalid JSON format\n";
-                    } else {
-                        var_dump("xxx\n");
-                        var_dump($array);
-                        var_dump("YYY\n");
-                    }
+                    // 使用正则表达式提取方括号中的内容
+                    preg_match('/\[(.*?)\]/', $arrayContent, $matches);
+                    var_dump($matches);
                 }
                 break;
             default:
