@@ -1,179 +1,226 @@
 <?php
 
-namespace InstallUtils;
+namespace T2\RateLimiter;
 
-class ComponentInstaller
+class Install
 {
-    const T2_INSTALL = true; // 安装模式标记
+    const bool T2_INSTALL = true;
 
     /**
-     * 安装组件
-     *
-     * @param string $source 源路径
-     * @param string $destination 目标路径
+     * @var array|string[]
      */
-    public static function install(string $source, string $destination): void
-    {
-        $sourcePath      = self::getPath(__DIR__, $source);
-        $destinationPath = self::getPath(__DIR__, $destination);
+    protected static array $pathRelation = [
+        'config' => 'config',
+    ];
 
-        if (!is_dir($sourcePath)) {
-            throw new \RuntimeException("Source directory not found: $sourcePath");
+    /**
+     * Install the package
+     * @return void
+     */
+    public static function install(): void
+    {
+        if (!self::isFrameworkInstalled()) {
+            echo "The 't2cn/framework' package is not installed. Installation aborted.\n";
+            return;
         }
 
-        self::copyDirectory($sourcePath, $destinationPath);
-        echo "Component installed from $sourcePath to $destinationPath\n";
+        static::installByRelation();
     }
 
     /**
-     * 卸载组件
-     *
-     * @param string $path 目标路径
+     * Uninstall the package
+     * @return void
      */
-    public static function uninstall(string $path): void
+    public static function uninstall(): void
     {
-        $destinationPath = self::getPath(__DIR__, $path);
+        foreach (static::$pathRelation as $dest) {
+            $file = base_path() . "/$dest/limiter.php";
+            self::deleteFile($file);
 
-        if (!is_dir($destinationPath)) {
-            throw new \RuntimeException("Directory not found: $destinationPath");
+            $targetFilePath = base_path() . "/$dest/bootstrap.php";
+            static::removeFromArray($targetFilePath, 'T2\\RateLimiter\\Bootstrap::class');
         }
-
-        self::deleteDirectory($destinationPath);
-        echo "Component uninstalled from $destinationPath\n";
     }
 
     /**
-     * 更新文件内容
-     *
-     * @param string $filePath 文件路径
-     * @param string $oldContent 旧内容
-     * @param string $newContent 新内容
+     * Perform installation based on path relations
+     * @return void
      */
-    public static function updateFileContent(string $filePath, string $oldContent, string $newContent): void
+    public static function installByRelation(): void
+    {
+        foreach (static::$pathRelation as $source => $dest) {
+            $sourcePath = __DIR__ . "/$source";
+            $targetPath = base_path() . "/$dest";
+
+            if (!self::copyDirectory($sourcePath, $targetPath)) {
+                echo "Failed to copy directory: $sourcePath to $targetPath\n";
+            }
+        }
+
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+    }
+
+    /**
+     * Check if the framework is installed
+     * @return bool
+     */
+    protected static function isFrameworkInstalled(): bool
+    {
+        $composerFilePath = base_path() . '/composer.json';
+        if (!file_exists($composerFilePath)) {
+            echo "composer.json not found. Cannot verify framework installation.\n";
+            return false;
+        }
+
+        $composerContent = file_get_contents($composerFilePath);
+        if ($composerContent === false) {
+            echo "Failed to read composer.json.\n";
+            return false;
+        }
+
+        $composerData = json_decode($composerContent, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo "Invalid composer.json format.\n";
+            return false;
+        }
+
+        $requirePackages = $composerData['require'] ?? [];
+        return isset($requirePackages['t2cn/framework']);
+    }
+
+    /**
+     * Add an item to an array in a file
+     * @param string $filePath
+     * @param string $newItem
+     */
+    protected static function addToArray(string $filePath, string $newItem): void
+    {
+        $fileContent = self::readFile($filePath);
+        if ($fileContent === false) {
+            return;
+        }
+
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        if (str_contains($arrayContent, $newItem)) {
+            echo "Item already exists in array: $newItem\n";
+            return;
+        }
+
+        $arrayContent     .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+        $newReturnContent = "return [$arrayContent];";
+        self::updateFileContent($filePath, $fileContent, $newReturnContent);
+    }
+
+    /**
+     * Remove an item from an array in a file
+     * @param string $filePath
+     * @param string $itemToRemove
+     */
+    protected static function removeFromArray(string $filePath, string $itemToRemove): void
+    {
+        $fileContent = self::readFile($filePath);
+        if ($fileContent === false) {
+            return;
+        }
+
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        if (!str_contains($arrayContent, $itemToRemove)) {
+            echo "Item not found in array: $itemToRemove\n";
+            return;
+        }
+
+        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
+        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
+        $newReturnContent = "return [$arrayContent];";
+        self::updateFileContent($filePath, $fileContent, $newReturnContent);
+    }
+
+    /**
+     * Delete a file
+     * @param string $filePath
+     */
+    protected static function deleteFile(string $filePath): void
+    {
+        if (is_file($filePath) && !unlink($filePath)) {
+            echo "Failed to delete: $filePath\n";
+        }
+    }
+
+    /**
+     * Read file content
+     * @param string $filePath
+     * @return string|false
+     */
+    protected static function readFile(string $filePath): false|string
     {
         if (!file_exists($filePath)) {
-            throw new \RuntimeException("File not found: $filePath");
+            echo "File not found: $filePath\n";
+            return false;
         }
 
-        $fileContent    = file_get_contents($filePath);
-        $updatedContent = str_replace($oldContent, $newContent, $fileContent);
-
-        file_put_contents($filePath, $updatedContent);
-        echo "File updated: $filePath\n";
+        return file_get_contents($filePath);
     }
 
     /**
-     * 从数组中移除元素
-     *
-     * @param string $arrayContent 数组字符串
-     * @param string $itemToRemove 要移除的元素
-     * @return string
+     * Update file content
+     * @param string $filePath
+     * @param string $oldContent
+     * @param string $newContent
      */
-    public static function removeFromArray(string $arrayContent, string $itemToRemove): string
+    protected static function updateFileContent(string $filePath, string $oldContent, string $newContent): void
     {
-        $pattern = '/\s*' . preg_quote($itemToRemove, '/') . '\s*,?/';
-        return preg_replace($pattern, '', $arrayContent);
+        $updatedContent = preg_replace('/return\s*\[.*?\];/s', $newContent, $oldContent);
+        if ($updatedContent === null || file_put_contents($filePath, $updatedContent) === false) {
+            echo "Failed to write file: $filePath\n";
+        }
     }
 
     /**
-     * 添加元素到数组
-     *
-     * @param string $arrayContent 数组字符串
-     * @param string $itemToAdd 要添加的元素
-     * @return string
+     * Copy a directory
+     * @param string $source
+     * @param string $destination
+     * @return bool
      */
-    public static function addToArray(string $arrayContent, string $itemToAdd): string
+    protected static function copyDirectory(string $source, string $destination): bool
     {
-        $array = self::parseArrayFromString($arrayContent);
-        if (!in_array($itemToAdd, $array, true)) {
-            $array[] = $itemToAdd;
+        if (!is_dir($source)) {
+            return false;
         }
 
-        return self::arrayToString($array);
-    }
-
-    /**
-     * 解析数组字符串为数组
-     *
-     * @param string $arrayContent 数组字符串
-     * @return array
-     */
-    protected static function parseArrayFromString(string $arrayContent): array
-    {
-        return eval('return ' . $arrayContent . ';'); // 使用更安全的逻辑替代 eval
-    }
-
-    /**
-     * 将数组转换为字符串
-     *
-     * @param array $array
-     * @return string
-     */
-    protected static function arrayToString(array $array): string
-    {
-        return '[' . implode(", ", array_map('var_export', $array, [true])) . ']';
-    }
-
-    /**
-     * 获取路径
-     *
-     * @param string $base 基础路径
-     * @param string $relative 相对路径
-     * @return string
-     */
-    protected static function getPath(string $base, string $relative): string
-    {
-        return rtrim($base, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($relative, DIRECTORY_SEPARATOR);
-    }
-
-    /**
-     * 递归复制目录
-     *
-     * @param string $source 源目录
-     * @param string $destination 目标目录
-     */
-    protected static function copyDirectory(string $source, string $destination): void
-    {
-        if (!is_dir($destination)) {
-            mkdir($destination, 0755, true);
+        if (!is_dir($destination) && !mkdir($destination, 0755, true)) {
+            return false;
         }
 
-        foreach (scandir($source) as $file) {
-            if ($file === '.' || $file === '..') {
+        foreach (scandir($source) as $item) {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
 
-            $srcPath  = $source . DIRECTORY_SEPARATOR . $file;
-            $destPath = $destination . DIRECTORY_SEPARATOR . $file;
+            $srcPath  = "$source/$item";
+            $destPath = "$destination/$item";
 
             if (is_dir($srcPath)) {
-                self::copyDirectory($srcPath, $destPath);
+                if (!self::copyDirectory($srcPath, $destPath)) {
+                    return false;
+                }
             } else {
-                copy($srcPath, $destPath);
-            }
-        }
-    }
-
-    /**
-     * 递归删除目录
-     *
-     * @param string $directory
-     */
-    protected static function deleteDirectory(string $directory): void
-    {
-        foreach (scandir($directory) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $filePath = $directory . DIRECTORY_SEPARATOR . $file;
-            if (is_dir($filePath)) {
-                self::deleteDirectory($filePath);
-            } else {
-                unlink($filePath);
+                if (!copy($srcPath, $destPath)) {
+                    return false;
+                }
             }
         }
 
-        rmdir($directory);
+        return true;
     }
 }
