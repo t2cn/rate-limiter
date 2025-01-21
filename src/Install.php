@@ -13,8 +13,7 @@ class Install
      * @var array
      */
     protected static array $pathRelation = [
-        'config/limiter.php' => 'config/limiter.php',
-        'config/test.php'    => 'config/test.php',
+        'config/limiter.php' => 'config/limiter.php'
     ];
 
     /**
@@ -23,12 +22,13 @@ class Install
      */
     public static function install(): void
     {
+        // 检查本地项目
         if (!self::isFrameworkInstalled(self::VALID_ENGINE_NAMES)) {
-            // 如果没有安装 t2cn/framework 框架，退出不做任何操作
             echo "The 't2cn/framework' package is not installed. Installation aborted.\n";
             return;
         }
 
+        // 循环遍历定义要操作的文件
         foreach (static::$pathRelation as $source => $dest) {
             $sourcePath = __DIR__ . "/$source"; // 源文件路径
             $targetPath = base_path() . "/$dest"; // 目标文件路径
@@ -36,13 +36,12 @@ class Install
             if (!copy($sourcePath, $targetPath)) {
                 echo "Failed to copy directory: $sourcePath to $targetPath\n";
             }
-
-//            if (!self::copyDirectory($sourcePath, $targetPath)) {
-//                echo "Failed to copy directory: $sourcePath to $targetPath\n";
-//            }
         }
-//
-//        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+
+        // 更新 bootstrap.php 文件内容
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+        var_dump($bootstrapFilePath);
+
 //        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
     }
 
