@@ -169,11 +169,13 @@ class Install
             return;
         }
         $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        var_dump($arrayContent);
-//        if (!str_contains($arrayContent, $itemToRemove)) {
-//            echo "Item not found in array: $itemToRemove\n";
-//            return;
-//        }
+        //string(63) "Session::class,LaravelDb::class,T2\RateLimiter\Bootstrap::class"
+        //string(66) "'@'=>[T2\RateLimiter\Limiter::class,T2\RateLimiter\Limiter::class]"
+        if (!str_contains($arrayContent, $itemToRemove)) {
+            echo "Item not found in array: $itemToRemove\n";
+            return;
+        }
+        var_dump($itemToRemove);
 //
 //        $arrayContent     = str_replace($itemToRemove . ',', '', $arrayContent);
 //        $arrayContent     = str_replace($itemToRemove, '', $arrayContent);
