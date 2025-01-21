@@ -39,48 +39,43 @@ class Install
         }
 
         // 更新 bootstrap.php 文件内容
-        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
-        var_dump($bootstrapFilePath);
-
-//        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+        $bootstrapFilePath = base_path() . "/config/bootstrap.php"; // string(71) "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
+        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
     }
 
     /**
-     * Copy a directory
-     * @param string $source 源文件
-     * @param string $destination
-     * @return bool
+     * 给指定文件添加内容
+     * @param string $filePath 要操作的文件路径
+     * @param string $newItem 要增加的内容
      */
-    protected static function copyDirectory(string $source, string $destination): bool
+    protected static function addToArray(string $filePath, string $newItem): void
     {
-        if (!is_dir($source)) {
-            return false;
+        // 没有找到指定的文件
+        if (!file_exists($filePath)) {
+            echo "File not found: $filePath\n";
+            return;
         }
-
-        if (!is_dir($destination) && !mkdir($destination, 0755, true)) {
-            return false;
+        // 读取指定的文件内容，如果读取失败
+        if (!$fileContent = file_get_contents($filePath)) {
+            echo "Failed to read file: $filePath\n";
+            return;
         }
+        var_dump($fileContent);
 
-        foreach (scandir($source) as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-
-            $srcPath  = "$source/$item";
-            $destPath = "$destination/$item";
-
-            if (is_dir($srcPath)) {
-                if (!self::copyDirectory($srcPath, $destPath)) {
-                    return false;
-                }
-            } else {
-                if (!copy($srcPath, $destPath)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+//        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+//            echo "No return array found in file: $filePath\n";
+//            return;
+//        }
+//
+//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+//        if (str_contains($arrayContent, $newItem)) {
+//            echo "Item already exists in array: $newItem\n";
+//            return;
+//        }
+//
+//        $arrayContent     .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+//        $newReturnContent = "return [$arrayContent];";
+//        self::updateFileContent($filePath, $fileContent, $newReturnContent);
     }
 
     /**
@@ -124,34 +119,6 @@ class Install
             return false;
         }
         return in_array($composerData['name'], $haystack, true);
-    }
-
-    /**
-     * Add an item to an array in a file
-     * @param string $filePath
-     * @param string $newItem
-     */
-    protected static function addToArray(string $filePath, string $newItem): void
-    {
-        $fileContent = self::readFile($filePath);
-        if ($fileContent === false) {
-            return;
-        }
-
-        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-            echo "No return array found in file: $filePath\n";
-            return;
-        }
-
-        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        if (str_contains($arrayContent, $newItem)) {
-            echo "Item already exists in array: $newItem\n";
-            return;
-        }
-
-        $arrayContent     .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-        $newReturnContent = "return [$arrayContent];";
-        self::updateFileContent($filePath, $fileContent, $newReturnContent);
     }
 
     /**
