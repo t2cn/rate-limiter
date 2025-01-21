@@ -95,8 +95,22 @@ class Install
             case 'T2\RateLimiter\Limiter::class':
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
-                    $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-                    var_dump($arrayContent);
+                    $arrayContent = preg_replace('/\s+/', '', $matches[1]); // "'@'=>[\T2\RateLimiter\LimiterA::class,\T2\RateLimiter\LimiterB::class,],'admin'=>[\T2\RateLimiter\LimiterC::class,]"
+                    // 匹配键和值的正则表达式
+                    preg_match_all("/'([^']+)' => \[(.*?)\]/s", $arrayContent, $matches);
+                    // 初始化结果数组
+                    $result = [];
+                    // 遍历每个匹配的键值对
+                    foreach ($matches[1] as $index => $key) {
+                        // 获取类名部分并去除空白字符，按逗号分割
+                        $classNames = array_map('trim', explode(',', $matches[2][$index]));
+                        // 过滤空白项，确保没有多余的空字符串
+                        $classNames = array_filter($classNames, fn($item) => !empty($item));
+                        // 将每个键的值设置为数组，原样保存类名字符串
+                        $result[$key] = $classNames;
+                    }
+                    // 输出结果
+                    var_dump($result);
                 }
                 break;
             default:
