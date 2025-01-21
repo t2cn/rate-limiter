@@ -60,12 +60,13 @@ class Install
             echo "Failed to read file: $filePath\n";
             return;
         }
-        var_dump($fileContent);
 
-//        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
-//            echo "No return array found in file: $filePath\n";
-//            return;
-//        }
+        // 从读取到的内容中提取 return[]，内部的内容，如果提取失败
+        if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
+            echo "No return array found in file: $filePath\n";
+            return;
+        }
+        var_dump($matches);
 //
 //        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
 //        if (str_contains($arrayContent, $newItem)) {
