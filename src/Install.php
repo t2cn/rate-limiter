@@ -152,14 +152,15 @@ class Install
             return;
         }
 
+        // 格式化数组内容并检查是否已有该项
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        if (str_contains($arrayContent, $newItem)) {
+            echo "Item already exists in array: $newItem\n";
+            return;
+        }
+
         switch ($newItem) {
             case 'T2\\RateLimiter\\Bootstrap::class':
-                // 格式化数组内容并检查是否已有该项
-                $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-                if (str_contains($arrayContent, $newItem)) {
-                    echo "Item already exists in array: $newItem\n";
-                    return;
-                }
                 // 添加新项到数组末尾
                 $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
                 // 更新文件内容
@@ -167,7 +168,7 @@ class Install
                 self::updateFileContent($filePath, $fileContent, $newReturnContent);
                 break;
             case 'T2\RateLimiter\Limiter::class':
-                var_dump($matches);
+                var_dump($arrayContent);
                 break;
             default:
                 echo "An error occurred\n";
