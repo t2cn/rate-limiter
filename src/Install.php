@@ -94,14 +94,7 @@ class Install
             case 'T2\\RateLimiter\\Limiter::class':
             case 'T2\RateLimiter\Limiter::class':
                 if (isset($matches[1])) {
-                    // 1. 将提取的字符串转换为数组
-                    $arrayContent = preg_replace('/\s+/', '', $matches[1]); // "'@'=>[\T2\RateLimiter\LimiterA::class,\T2\RateLimiter\LimiterB::class,],'admin'=>[\T2\RateLimiter\LimiterC::class,]"
-                    // 补全 JSON 格式
-                    $json = '{' . $arrayContent . '}';
-                    // 将 JSON 字符串转换为 PHP 数组
-                    $array = json_decode($json, true);
-                    var_dump($array);
-                    var_dump(11111);
+                    var_dump($matches[1]);
                 }
                 break;
             default:
