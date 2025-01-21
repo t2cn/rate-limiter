@@ -118,11 +118,13 @@ class Install
                 $arrayContent .= ($arrayContent ? ',' : '') . "\\T2\\RateLimiter\\LimiterB::class";
                 // 构造替换后的 '@' 区间字符串
                 $newString = "'@'=>[" . $arrayContent . ']';
+                var_dump($newString);
                 // 确定替换的起点和长度
                 $start  = $atPosition - 1;
                 $length = $closeBracketPosition - $start + 1;
                 // 替换原字符串的指定部分
                 $arrayContent = substr_replace($arrayContent, $newString, $start, $length);
+                var_dump($arrayContent);
                 break;
             default:
                 echo "No action was taken\n";
