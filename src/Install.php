@@ -166,17 +166,18 @@ class Install
                 // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
                 // 使用 eval 让 PHP 解析它
                 $array = eval('return [' . $arrayContent . '];');
+                // 检查 '@' 键是否存在，并确保值是数组
+                if (isset($array['@']) && is_array($array['@'])) {
+                    // 判断是否已经包含该项，如果没有，则添加
+                    if (!in_array($newItem, $array['@'], true)) {
+                        $array['@'][] = $newItem;
+                    }
+                } else {
+                    // 如果 '@' 键不存在或不是数组，初始化它
+                    $array['@'] = [$newItem];
+                }
                 var_dump($array);
-//                // 检查 '@' 键是否存在，并确保值是数组
-//                if (isset($array['@']) && is_array($array['@'])) {
-//                    // 判断是否已经包含该项，如果没有，则添加
-//                    if (!in_array($newItem, $array['@'], true)) {
-//                        $array['@'][] = $newItem;
-//                    }
-//                } else {
-//                    // 如果 '@' 键不存在或不是数组，初始化它
-//                    $array['@'] = [$newItem];
-//                }
+
 //                // 自定义函数来将数组转换为所需格式的字符串
 //                function arrayToString($array): string
 //                {
