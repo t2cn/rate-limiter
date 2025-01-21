@@ -31,20 +31,18 @@ class Install
         foreach (static::$pathRelation as $source => $dest) {
             $sourcePath = __DIR__ . "/$source"; // 源文件路径
             $targetPath = base_path() . "/$dest"; // 目标文件路径
-            // 拷贝源文件
-
-            var_dump(!copy($sourcePath, $targetPath));
-//            if (!copy($sourcePath, $targetPath)) {
-//                echo "Failed to copy directory: $sourcePath to $targetPath\n";
-//            }
+            // 拷贝文件
+            if (!copy($sourcePath, $targetPath)) {
+                echo "Failed to copy directory: $sourcePath to $targetPath\n";
+            }
 
 //            if (!self::copyDirectory($sourcePath, $targetPath)) {
 //                echo "Failed to copy directory: $sourcePath to $targetPath\n";
 //            }
         }
-
-        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
-        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+//
+//        $bootstrapFilePath = base_path() . "/config/bootstrap.php";
+//        static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
     }
 
     /**
