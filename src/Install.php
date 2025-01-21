@@ -60,22 +60,22 @@ class Install
             echo "Failed to read file: $filePath\n";
             return;
         }
-
         // 从读取到的内容中提取 return[]，内部的内容，如果提取失败
         if (!preg_match('/return\s*\[(.*?)\];/s', $fileContent, $matches)) {
             echo "No return array found in file: $filePath\n";
             return;
         }
+        // 去除字符串中的所有空格、换行符、制表符等空白字符。
         $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        var_dump($arrayContent);
-//        if (str_contains($arrayContent, $newItem)) {
-//            echo "Item already exists in array: $newItem\n";
-//            return;
-//        }
-//
-//        $arrayContent     .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
-//        $newReturnContent = "return [$arrayContent];";
-//        self::updateFileContent($filePath, $fileContent, $newReturnContent);
+        // 检查 $arrayContent 中是否包含 要添加的内容，如果包含则不做任何操作
+        if (str_contains($arrayContent, $newItem)) {
+            echo "Item already exists in array: $newItem\n";
+            return;
+        }
+        // 组装新的数据
+        $arrayContent .= (!str_ends_with($arrayContent, ',') ? ',' : '') . $newItem;
+        // 更新数据
+        self::updateFileContent($filePath, $fileContent, "return [$arrayContent];");
     }
 
     /**
