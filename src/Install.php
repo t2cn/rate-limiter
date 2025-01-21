@@ -96,6 +96,7 @@ class Install
                 if (isset($matches[1])) {
                     // 1. 将提取的字符串转换为数组
                     $arrayContent = $matches[1];
+                    var_dump($arrayContent);
                     // 将内容转换为 JSON 格式
                     $arrayContent = str_replace(['\'', '\"'], ['"', '"'], $arrayContent); // 处理引号，确保 JSON 格式
                     $arrayContent = '[' . $arrayContent . ']'; // 将其包裹成数组形式
