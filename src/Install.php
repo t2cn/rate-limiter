@@ -162,11 +162,11 @@ class Install
                 break;
             case 'T2\\RateLimiter\\Limiter::class':
                 // 4. 将提取的字符串转换为数组
-                $arrayContent = $matches[1];
-                var_dump($arrayContent);
-//                // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
-//                // 使用 eval 让 PHP 解析它
-//                $array = eval('return [' . $arrayContent . '];');
+                $arrayContent = $matches[1]; // string(40) "'@' => [\T2\RateLimiter\LimiterA::class]"
+                // 5. 解析数组内容，转换成 PHP 数组（需要处理引号、类名等）
+                // 使用 eval 让 PHP 解析它
+                $array = eval('return [' . $arrayContent . '];');
+                var_dump($array);
 //                // 检查 '@' 键是否存在，并确保值是数组
 //                if (isset($array['@']) && is_array($array['@'])) {
 //                    // 判断是否已经包含该项，如果没有，则添加
