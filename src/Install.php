@@ -113,7 +113,7 @@ class Install
                 // 提取中括号内的内容并进行格式化
                 $arrayContent = rtrim(preg_replace('/,\s*/', ',', $matches[1]), ',');
                 // 添加新的内容到数组中
-                $arrayContent .= ($arrayContent ? ',' : '') . "\\T2\\RateLimiter\\LimiterB::class";
+                $arrayContent .= ($arrayContent ? ',' : '') . $newItem;
                 // 构造替换后的 '@' 区间字符串
                 $newString = "'@'=>[" . $arrayContent . ']';
                 // 确定替换的起点和长度
