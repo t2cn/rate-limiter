@@ -145,12 +145,11 @@ class Install
         }
         // 格式化数组内容并检查是否已有该项
         $arrayContent = preg_replace('/\s+/', '', $matches[1]);
-        var_dump($arrayContent);
-//        if (str_contains($arrayContent, $newItem)) {
-//            echo "Item already exists in array: $newItem\n";
-//            return;
-//        }
-//
+        if (str_contains($arrayContent, $newItem)) {
+            echo "Item already exists in array: $newItem\n";
+            return;
+        }
+        var_dump($newItem);
 //        switch ($newItem) {
 //            case 'T2\\RateLimiter\\Bootstrap::class':
 //                // 添加新项到数组末尾
