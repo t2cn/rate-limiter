@@ -186,7 +186,7 @@ class Install
                         // 处理值（数组），将每个类名以逗号分隔并加上类的形式
                         $valueStr = array_map(function ($item) {
                             $newItem = $item . '::class';
-                            return '\\' . $newItem;
+                            return '\\' . $item;
                         }, $value);
                         // 转换为数组格式的字符串
                         $result .= $key . ' => [' . implode(', ', $valueStr) . '], ';
