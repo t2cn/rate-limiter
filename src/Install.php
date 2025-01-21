@@ -66,9 +66,8 @@ class Install
             echo "No return array found in file: $filePath\n";
             return;
         }
-        var_dump($matches);
-//
-//        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        $arrayContent = preg_replace('/\s+/', '', $matches[1]);
+        var_dump($arrayContent);
 //        if (str_contains($arrayContent, $newItem)) {
 //            echo "Item already exists in array: $newItem\n";
 //            return;
