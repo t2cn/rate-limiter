@@ -41,6 +41,9 @@ class Install
         // 更新 bootstrap.php 文件内容
         $bootstrapFilePath = base_path() . "/config/bootstrap.php"; // string(71) "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
         static::addToArray($bootstrapFilePath, 'T2\\RateLimiter\\Bootstrap::class');
+        // 更新 middleware.php 文件内容
+        $middlewareFilePath = base_path() . "/config/middleware.php"; // string(71) "/Users/dev/Develop.localized/scbtl/engine-multiple/config/bootstrap.php"
+        var_dump($middlewareFilePath);
     }
 
     /**
