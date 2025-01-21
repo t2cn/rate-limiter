@@ -101,7 +101,7 @@ class Install
                     // 初始化结果数组
                     $result = [];
 
-                    var_dump($matches);
+                    var_dump($arrayContent);
                     var_dump(111111111);
                     // 遍历每个匹配的键值对
                     foreach ($matches[1] as $index => $key) {
