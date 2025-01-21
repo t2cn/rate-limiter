@@ -102,8 +102,6 @@ class Install
                     if (isset($matches[1])) {
                         // 去除不必要的空格，确保类名格式正确
                         $arrayContent = $matches[1];
-                        // 处理类名格式 (比如 \T2\RateLimiter\LimiterA::class)，移除转义字符等
-                        $arrayContent = preg_replace('/\\\\/', '', $arrayContent); // 清除多余的转义字符
                         // 将提取的类名作为数组元素并转换为数组
                         $array = explode(', ', $arrayContent);
                         // 输出结果
